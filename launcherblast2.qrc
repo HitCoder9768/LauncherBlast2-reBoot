@@ -1,0 +1,25 @@
+<RCC>
+  <qresource prefix="assets">
+    <file>img/icons/multiplayer.png</file>
+    <file>img/icons/news.png</file>
+    <file>img/icons/about.png</file>
+    <file>img/icons/srb2.png</file>
+    <file>img/icons/settings.png</file>
+    <file>img/combobox-dropdown-light.png</file>
+    <file>img/srb2-title-new.png</file>
+    <file>img/srb2-title.png</file>
+    <file>img/filetypes/kart.png</file>
+    <file>img/filetypes/lua.png</file>
+    <file>img/filetypes/pk3.png</file>
+    <file>img/filetypes/soc.png</file>
+    <file>img/filetypes/wad.png</file>
+    <file>img/combobox-dropdown.png</file>
+    <file>img/uparrow.png</file>
+    <file>img/sonic.png</file>
+    <file>img/knuckles.png</file>
+    <file>img/fang.png</file>
+    <file>img/metal.png</file>
+    <file>img/rosy.png</file>
+    <file>img/tails.png</file>
+  </qresource>
+</RCC>
