@@ -22,6 +22,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
 
         self.app = app
+        self.setWindowTitle("Launcherblast2 reBoot-2.0")
 
         # server ips stored internally so u don't dox people's ips if you're streaming or smth
         self.serverIps = []
@@ -44,6 +45,7 @@ class MainWindow(QMainWindow):
 
         # set tab to game tab initially ============================================== #
         self.ui.MainTabsStackedWidget.setCurrentIndex(1)
+        self.ui.GameContentStackedWidget.setCurrentIndex(0)
 
         # fix resolution of skin image =============================================== #
         self.ui.PlayerSkinImage.setPixmap(QtGui.QPixmap(":/assets/img/sonic.png").scaled(135,190,aspectRatioMode=QtCore.Qt.KeepAspectRatio,transformMode=QtCore.Qt.FastTransformation))
@@ -119,7 +121,7 @@ class MainWindow(QMainWindow):
             # title
             articleTitleLabel = QtWidgets.QLabel(self.ui.NewsScrollAreaContent)
             articleTitleLabel.setStyleSheet("font-size: 14pt;")
-            urlLink="<a href=\"" + item["link"] + "\" style=\"color: #aaa;\">" + item["title"] + "</a>"
+            urlLink="<a href=\"" + item["link"] + "\" style=\"color: #ddd;\">" + item["title"] + "</a>"
             articleTitleLabel.setText(QtCore.QCoreApplication.translate("MainWindow", urlLink))
             articleTitleLabel.setOpenExternalLinks(True)
             self.ui.verticalLayout_20.addWidget(articleTitleLabel)

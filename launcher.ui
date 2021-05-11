@@ -261,8 +261,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>823</width>
-                <height>484</height>
+                <width>156</width>
+                <height>37</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -1815,7 +1815,7 @@ font-size: 12pt;</string>
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>655</width>
+                           <width>270</width>
                            <height>518</height>
                           </rect>
                          </property>
@@ -2609,8 +2609,8 @@ font-size: 12pt;</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>823</width>
-                <height>484</height>
+                <width>98</width>
+                <height>71</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_19">
@@ -2713,8 +2713,8 @@ p, li { white-space: pre-wrap; }
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>823</width>
-                <height>484</height>
+                <width>217</width>
+                <height>109</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_18">

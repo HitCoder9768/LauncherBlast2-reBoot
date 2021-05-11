@@ -1,8 +1,8 @@
 <RCC>
   <qresource prefix="assets">
     <file>img/icons/multiplayer.png</file>
-    <file>img/icons/news.png</file>
     <file>img/icons/about.png</file>
+    <file>img/icons/news.png</file>
     <file>img/icons/srb2.png</file>
     <file>img/icons/settings.png</file>
     <file>img/combobox-dropdown-light.png</file>
