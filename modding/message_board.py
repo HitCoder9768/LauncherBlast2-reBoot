@@ -42,33 +42,6 @@ class MBQuery:
                             'AppleWebKit/537.36 (KHTML, like Gecko) '
                             'Chrome/39.0.2171.95 Safari/537.36'}
 
-        # Store request responses for mods, so we don't have to repeat requests:
-        self.maps = []
-        self.lua = []
-        self.misc = []
-        self.assets = []
-        self.characters = []
-
-    def get_maps(self):
-        self.maps = self.get_mods(self.maps_sublink)
-        return self.maps
-
-    def get_lua(self):
-        self.lua = self.get_mods(self.lua_sublink)
-        return self.lua
-
-    def get_characters(self):
-        self.characters = self.get_mods(self.characters_sublink)
-        return self.characters
-
-    def get_misc(self):
-        self.misc = self.get_mods(self.misc_sublink)
-        return self.misc
-
-    def get_assets(self):
-        self.assets = self.get_mods(self.assets_sublink)
-        return self.assets
-
     def get_mods(self, addons_subforum_url):
         """
         Gets a list of all mods from addons subforum URL
@@ -138,25 +111,10 @@ class MBQuery:
         mod.html = html.parse(response.raw)
         return html.parse(response.raw)
 
-    def get_mod_page_html_str(self, mod: Mod):
-        def get_mod_page_html(self, mod: Mod):
-            url = mod.url
-            response = requests.get(url,
-                                    stream=True,
-                                    headers=self.headers)
-            response.raw.decode_content = True
-            return response.json()
-
-    def get_mod_description_html(self, mod: Mod):
-        if not mod.html:
-            self.get_mod_page_html(mod)
-        innerHTML = mod.html.xpath('//article[@class="resourceBody-main js-lbContainer"]/text()')
-        return innerHTML
-
     def get_mod_description(self, mod: Mod):
         if not mod.html:
             self.get_mod_page_html(mod)
-        mod.description = mod.html.xpath('//div[@class="bbWrapper"]/text()')
+        mod.description = '\n'.join(mod.html.xpath('//div[@class="bbWrapper"]/text()'))
         return mod.description
 
     def get_list_of_thread_names(self, parsed_html):
@@ -169,28 +127,3 @@ class MBQuery:
 
     def get_list_of_thread_links(self, parsed_html):
         return parsed_html.xpath('.//div[@class="structItem-title"]/*[@data-tp-primary="on"]/@href')
-
-    def get_mod_version(self):
-        pass
-
-    def get_mod_srb2_version(self):
-        pass
-
-    def get_github_versions(self):
-        pass
-
-    def get_gitlab_versions(self):
-        pass
-
-    def get_history_list(self):
-        pass
-
-"""
-Example:
-
-mb_query = MBQuery()
-mb_query.get_maps()
-mod = mb_query.get_mod_by_name("The Confused Maps [Addon for BattleMod]", mb_query.maps)
-print(str(mod.name))
-print(mb_query.get_mod_description(mod))
-"""

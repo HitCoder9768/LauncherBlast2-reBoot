@@ -466,8 +466,7 @@ class MainWindow(QMainWindow):
         self.mod_list_sig.emit(self.ui.ModTypeCombo.currentText())
 
     def on_mod_description(self, description):
-        description = description.rstrip('\r\n')
-        self.ui.ModBrowser.setText(description.rstrip())
+        self.ui.ModBrowser.setText(description)
 
     def on_mod_list(self, mod_list):
         self.ui.ModsList.clear()
