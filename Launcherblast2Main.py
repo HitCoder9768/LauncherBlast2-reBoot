@@ -1,14 +1,28 @@
-import fix_qt_import_error
-import sys, os, PyQt5.QtWidgets, json, feedparser, json, pathlib, characterText, urllib, subprocess
-from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMenu, QMessageBox
-from LauncherUI import *
-from datetime import date
-from qss import themes
-import EditServerMain
+import html
 
-fool = date.today()==date(date.today().year, 4, 1)
+from PySide6 import QtGui, QtCore, QtWidgets
+
+import characterText
+import feedparser
+import json
+import os
+import urllib
+import urllib.parse
+import sys
+import requests
+from datetime import date
+
+from PySide6.QtWidgets import QMainWindow, QApplication, QFileDialog, QMenu, QMessageBox, QLayout
+
+import EditServerMain
+import srb2query
+from LauncherUI import *
+from qss import themes
+
+fool = date.today() == date(date.today().year, 4, 1)
 
 versionString = "reBoot-2.0"
+
 
 class MainWindow(QMainWindow):
     def __init__(self, app):
@@ -25,30 +39,37 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Launcherblast2 reBoot-2.0")
 
         # server ips stored internally so u don't dox people's ips if you're streaming or smth
-        self.serverIps = []
+        self.saved_server_ips = []
+
+        # Dict associating QListWidget items with server data:
+        self.master_server_list = {}
+        self.loadMasterServerList()
 
         # load servers from file ===================================================== #
-        #self.loadServerList()
-        self.hasLoadedServers = False
+        # self.loadServerList()
+        self.has_loaded_servers = False
 
         # launcher config settings =========================#
         self.launcherConfigFile = "LauncherBlast2Conf.json"
 
-
         # allow posix systems to use wine ============================================ #
-        if(os.name=="posix"):
+        if (os.name == "posix"):
             self.ui.WineToggle.setEnabled(True)
 
         # file dialog options to keep shit consistent ================================ #
         self.FileDialogOptions = QFileDialog.Options()
-        #self.FileDialogOptions |= QFileDialog.DontUseNativeDialog
+        # self.FileDialogOptions |= QFileDialog.DontUseNativeDialog
 
         # set tab to game tab initially ============================================== #
         self.ui.MainTabsStackedWidget.setCurrentIndex(1)
         self.ui.GameContentStackedWidget.setCurrentIndex(0)
 
         # fix resolution of skin image =============================================== #
-        self.ui.PlayerSkinImage.setPixmap(QtGui.QPixmap(":/assets/img/sonic.png").scaled(135,190,aspectRatioMode=QtCore.Qt.KeepAspectRatio,transformMode=QtCore.Qt.FastTransformation))
+        self.ui.PlayerSkinImage.setPixmap(QtGui.QPixmap(":/assets/img/sonic.png")
+                                          .scaled(135,
+                                                  190,
+                                                  QtCore.Qt.KeepAspectRatio,
+                                                  QtCore.Qt.FastTransformation))
 
         # changed skin index ========================================================= #
         self.ui.PlayerSkinInput.currentIndexChanged.connect(self.changeSkinImage)
@@ -89,25 +110,28 @@ class MainWindow(QMainWindow):
         self.ui.DeleteServerButton.clicked.connect(self.deleteSelectedServer)
         self.ui.EditServerButton.clicked.connect(self.openServerEditor)
         self.ui.JoinAddressButton.clicked.connect(self.joinFromIP)
+        self.ui.RefreshButton.clicked.connect(self.loadMasterServerList)
+        self.ui.JoinMasterServerButton.clicked.connect(self.joinMasterServerSelection)
+        self.ui.SaveMSButton.clicked.connect(self.saveMasterServerSelection)
 
         # play button ================================================================ #
         self.ui.GamePlayButton.clicked.connect(self.launchGameNormally)
-        #self.ui.GameOptionsDropDownButton.clicked.connect()
+        # self.ui.GameOptionsDropDownButton.clicked.connect()
         self.gameOptionsDropDownMenu = QMenu()
-        self.gameOptionsDropDownMenu.addAction("Save current parameters to script",self.exportScript)
+        self.gameOptionsDropDownMenu.addAction("Save current parameters to script", self.exportScript)
         self.ui.GameOptionsDropDownButton.setMenu(self.gameOptionsDropDownMenu)
         self.ui.GameOptionsDropDownButton.clicked.connect(self.showGameOptionsDropDownMenu)
 
         # load news feed from srb2.org =============================================== #
         self.loadNewsFeed()
-        
+
         # and then add the spacer at the bottom
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.ui.verticalLayout_20.addItem(spacerItem)
 
     def showGameOptionsDropDownMenu(self):
         menu = QMenu()
-        menu.addAction("Save current parameters to script",self.exportScript)
+        menu.addAction("Save current parameters to script", self.exportScript)
         menu.exec()
 
     def loadNewsFeed(self):
@@ -121,7 +145,7 @@ class MainWindow(QMainWindow):
             # title
             articleTitleLabel = QtWidgets.QLabel(self.ui.NewsScrollAreaContent)
             articleTitleLabel.setStyleSheet("font-size: 14pt;")
-            urlLink="<a href=\"" + item["link"] + "\" style=\"color: #ddd;\">" + item["title"] + "</a>"
+            urlLink = "<a href=\"" + item["link"] + "\" style=\"color: #ddd;\">" + item["title"] + "</a>"
             articleTitleLabel.setText(QtCore.QCoreApplication.translate("MainWindow", urlLink))
             articleTitleLabel.setOpenExternalLinks(True)
             self.ui.verticalLayout_20.addWidget(articleTitleLabel)
@@ -129,48 +153,50 @@ class MainWindow(QMainWindow):
             # author name and date
             authorNameLabel = QtWidgets.QLabel(self.ui.NewsScrollAreaContent)
             authorNameLabel.setStyleSheet("font-weight: 400;")
-            authorNameLabel.setText(item["author"] + " - "+ item["published"].replace(" +0000",""))
+            authorNameLabel.setText(item["author"] + " - " + item["published"].replace(" +0000", ""))
             self.ui.verticalLayout_20.addWidget(authorNameLabel)
 
             # snippet
             infoLabel = QtWidgets.QLabel(self.ui.NewsScrollAreaContent)
             infoLabel.setStyleSheet("font-weight: 400;")
-            infoLabel.setText("<div style=\"text-wrap: wrap-word;\">"+item["summary"]+"</div>")
+            infoLabel.setText("<div style=\"text-wrap: wrap-word;\">" + item["summary"] + "</div>")
             infoLabel.setWordWrap(True)
             infoLabel.adjustSize()
-            infoLabel.setSizePolicy(QtWidgets.QSizePolicy.Minimum,QtWidgets.QSizePolicy.Minimum)
+            infoLabel.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
             self.ui.verticalLayout_20.addWidget(infoLabel)
 
     # add server window ============================================================== #
     # ================================================================================ #
     def showAddServerDialog(self):
-        self.childWindow = EditServerMain.ChildWindow(self,"","",True)
+        self.childWindow = EditServerMain.ChildWindow(self, "", "", True)
         self.childWindow.show()
         return
-        
+
     # change character image for skin thing ========================================== #
     # ================================================================================ #
     def changeSkinImage(self):
         assetImg = ":/assets/img/sonic.png"
         self.ui.PlayerSkinInfoText.setText(characterText.sonic)
-        if(self.ui.PlayerSkinInput.currentIndex() == 2):
+        if (self.ui.PlayerSkinInput.currentIndex() == 2):
             assetImg = ":/assets/img/tails.png"
             self.ui.PlayerSkinInfoText.setText(characterText.tails)
-        if(self.ui.PlayerSkinInput.currentIndex() == 3):
+        if (self.ui.PlayerSkinInput.currentIndex() == 3):
             assetImg = ":/assets/img/knuckles.png"
             self.ui.PlayerSkinInfoText.setText(characterText.knux)
-        if(self.ui.PlayerSkinInput.currentIndex() == 4):
+        if (self.ui.PlayerSkinInput.currentIndex() == 4):
             assetImg = ":/assets/img/rosy.png"
             self.ui.PlayerSkinInfoText.setText(characterText.amy)
-        if(self.ui.PlayerSkinInput.currentIndex() == 5):
+        if (self.ui.PlayerSkinInput.currentIndex() == 5):
             assetImg = ":/assets/img/fang.png"
             self.ui.PlayerSkinInfoText.setText(characterText.fang)
-        if(self.ui.PlayerSkinInput.currentIndex() == 6):
+        if (self.ui.PlayerSkinInput.currentIndex() == 6):
             assetImg = ":/assets/img/metal.png"
             self.ui.PlayerSkinInfoText.setText(characterText.metal)
 
-
-        self.ui.PlayerSkinImage.setPixmap(QtGui.QPixmap(assetImg).scaled(135,190,aspectRatioMode=QtCore.Qt.KeepAspectRatio,transformMode=QtCore.Qt.FastTransformation))
+        self.ui.PlayerSkinImage.setPixmap(QtGui.QPixmap(assetImg).scaled(135,
+                                                                         190,
+                                                                         QtCore.Qt.KeepAspectRatio,
+                                                                         QtCore.Qt.FastTransformation))
         return
 
     # create srb2 launch command ===================================================== #
@@ -180,25 +206,26 @@ class MainWindow(QMainWindow):
     def getLaunchCommand(self):
         ui = self.ui
         com = ""
-        if(self.ui.WineToggle.isChecked() and self.ui.WineToggle.isEnabled()): com += "wine "
-        com += "\""+ui.GameExecFilePathInput.text()+"\""
+        if (self.ui.WineToggle.isChecked() and self.ui.WineToggle.isEnabled()): com += "wine "
+        com += "\"" + ui.GameExecFilePathInput.text() + "\""
 
         # game settings (from game settings tab) ===================================== #
-        if(ui.GameRendererSetting.currentIndex()==0): com += " +renderer 1"
-        if(ui.GameRendererSetting.currentIndex()==1): com += " +renderer 2"
-        if(ui.GameFullscreenSetting.currentIndex()==0): com += " +fullscreen 1"
-        if(ui.GameFullscreenSetting.currentIndex()==1): com += " -borderless"
-        if(ui.GameFullscreenSetting.currentIndex()==2): com += " -win"
-        if(ui.GameMusicSetting.currentIndex()==0): com += " +digimusic On"
-        if(ui.GameMusicSetting.currentIndex()==1): com += " +digimusic Off"
-        if(ui.GameMusicSetting.currentIndex()==2): com += " -usecd"
-        if(ui.GameMusicSetting.currentIndex()==3): com += " -nomusic"
-        if(ui.GameSoundSetting.currentIndex()==1): com += " -nosound"
-        if(ui.GameHorizontalResolutionInput.text()!="" and ui.GameVerticalResolutionInput.text()!=""):
+        if (ui.GameRendererSetting.currentIndex() == 0): com += " +renderer 1"
+        if (ui.GameRendererSetting.currentIndex() == 1): com += " +renderer 2"
+        if (ui.GameFullscreenSetting.currentIndex() == 0): com += " +fullscreen 1"
+        if (ui.GameFullscreenSetting.currentIndex() == 1): com += " -borderless"
+        if (ui.GameFullscreenSetting.currentIndex() == 2): com += " -win"
+        if (ui.GameMusicSetting.currentIndex() == 0): com += " +digimusic On"
+        if (ui.GameMusicSetting.currentIndex() == 1): com += " +digimusic Off"
+        if (ui.GameMusicSetting.currentIndex() == 2): com += " -usecd"
+        if (ui.GameMusicSetting.currentIndex() == 3): com += " -nomusic"
+        if (ui.GameSoundSetting.currentIndex() == 1): com += " -nosound"
+        if (ui.GameHorizontalResolutionInput.text() != "" and ui.GameVerticalResolutionInput.text() != ""):
             com += " -width " + ui.GameHorizontalResolutionInput.text() + " -height " + ui.GameVerticalResolutionInput.text()
-        if(ui.PlayerNameInput.text()!=""): com += " +name \"" + ui.PlayerNameInput.text() + "\""
-        if(ui.PlayerColorInput.currentIndex()!=0): com += " +color " + str(ui.PlayerColorInput.currentText().lower())
-        if(ui.PlayerSkinInput.currentIndex()!=0): com += " +skin " + str(ui.PlayerSkinInput.currentText().lower().replace(" ",""))
+        if (ui.PlayerNameInput.text() != ""): com += " +name \"" + ui.PlayerNameInput.text() + "\""
+        if (ui.PlayerColorInput.currentIndex() != 0): com += " +color " + str(ui.PlayerColorInput.currentText().lower())
+        if (ui.PlayerSkinInput.currentIndex() != 0): com += " +skin " + str(
+            ui.PlayerSkinInput.currentText().lower().replace(" ", ""))
 
         # get all files ============================================================== #
         com += " -file"
@@ -206,11 +233,11 @@ class MainWindow(QMainWindow):
             com += " \"" + ui.GameFilesList.item(i).text() + "\""
 
         # add a script =============================================================== #
-        if(ui.GameFilesExecScriptInput.text()!=""): com += " +exec " + ui.GameFilesExecScriptInput.text()
+        if (ui.GameFilesExecScriptInput.text() != ""): com += " +exec " + ui.GameFilesExecScriptInput.text()
 
         # custom parameters ========================================================== #
-        if(ui.GameArgsInput.text()!=""): com += " " + ui.GameArgsInput.text()
-        
+        if (ui.GameArgsInput.text() != ""): com += " " + ui.GameArgsInput.text()
+
         return com
 
     # clear files list =============================================================== #
@@ -231,7 +258,7 @@ class MainWindow(QMainWindow):
     def moveSelectedFilesUp(self):
         for item in self.ui.GameFilesList.selectedItems():
             row = self.ui.GameFilesList.row(item)
-            if(row==0): return
+            if (row == 0): return
             cItem = self.ui.GameFilesList.takeItem(row)
             self.ui.GameFilesList.insertItem(row - 1, cItem)
             cItem.setSelected(True)
@@ -259,7 +286,8 @@ class MainWindow(QMainWindow):
         newItem.setText(os.path.basename(str(f)))
         newItemIcon = QtGui.QIcon()
         filetype = str(f).split(".")[-1]
-        newItemIcon.addPixmap(QtGui.QPixmap(":/assets/img/filetypes/"+filetype+".png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        newItemIcon.addPixmap(QtGui.QPixmap(":/assets/img/filetypes/" + filetype + ".png"), QtGui.QIcon.Normal,
+                              QtGui.QIcon.Off)
         newItem.setIcon(newItemIcon)
         self.ui.GameFilesList.addItem(newItem)
         return
@@ -267,7 +295,9 @@ class MainWindow(QMainWindow):
     # add files button =============================================================== #
     # ================================================================================ #
     def addFiles(self):
-        files, _ = QFileDialog.getOpenFileNames(self,"Open files to add to SRB2", "", "All compatible SRB2 files (*.pk3 *.wad *.lua *.soc);;PK3 Files (*.pk3);;WAD Files (*.wad);;Lua Files (*.lua);;SOC files (*.soc)", options=self.FileDialogOptions)
+        files, _ = QFileDialog.getOpenFileNames(self, "Open files to add to SRB2", "",
+                                                "All compatible SRB2 files (*.pk3 *.wad *.lua *.soc);;PK3 Files (*.pk3);;WAD Files (*.wad);;Lua Files (*.lua);;SOC files (*.soc)",
+                                                options=self.FileDialogOptions)
         if files:
             # add each file to the file list with icon =============================== #
             for f in files:
@@ -281,25 +311,29 @@ class MainWindow(QMainWindow):
             items.append(self.ui.GameFilesList.item(i).text())
 
         # open a file dialog ========================================================= #
-        f, _ = QFileDialog.getSaveFileName(self,"Save file list","","JSON files (*.json)", options=self.FileDialogOptions)
+        f, _ = QFileDialog.getSaveFileName(self, "Save file list", "", "JSON files (*.json)",
+                                           options=self.FileDialogOptions)
         if f:
             with open(f, 'w') as outfile:
-                json.dump(items,outfile)
+                json.dump(items, outfile)
         return
 
     def loadFileList(self):
         # open file ================================================================== #
-        f, _ = QFileDialog.getOpenFileName(self,"Open file list","","JSON files (*.json)",options=self.FileDialogOptions)
+        f, _ = QFileDialog.getOpenFileName(self, "Open file list", "", "JSON files (*.json)",
+                                           options=self.FileDialogOptions)
         if f:
-            with open(f,'r') as jsonFile:
+            with open(f, 'r') as jsonFile:
                 items = json.load(jsonFile)
                 for item in items:
                     self.addFile(item)
         return
 
     def setExecFilePath(self):
-        f, _ = QFileDialog.getOpenFileName(self,"Open script to execute on launch","","All compatible files (*.txt *.cfg);;All files (*)",options=self.FileDialogOptions)
-        if(f):
+        f, _ = QFileDialog.getOpenFileName(self, "Open script to execute on launch", "",
+                                           "All compatible files (*.txt *.cfg);;All files (*)",
+                                           options=self.FileDialogOptions)
+        if (f):
             self.ui.GameFilesExecScriptInput.setText(f)
 
     # play button ==================================================================== #
@@ -321,12 +355,40 @@ class MainWindow(QMainWindow):
         self.ui.GameContentStackedWidget.setCurrentIndex(index)
         return
 
+    def loadMasterServerList(self):
+        ms_data = srb2query.get_server_list(srb2query.ms_url)
+        del self.master_server_list
+        self.master_server_list = {}
+        for server in ms_data:
+            entry_label = '{} | Room: {} | Version: {}'.format(
+                server.get("name"),
+                server.get("room"),
+                server.get("version"))
+            newItem = QtWidgets.QListWidgetItem()
+            newItem.setText(entry_label)
+            self.ui.MasterServerList.addItem(newItem)
+            self.master_server_list[entry_label] = server
+        return
+
+    def joinMasterServerSelection(self):
+        selection = self.ui.MasterServerList.currentItem().text()
+        ip_string = self.master_server_list[selection].get("ip")
+        os.system(self.getLaunchCommand() + " -connect " + ip_string)
+        return
+
+    def saveMasterServerSelection(self):
+        selection = self.ui.MasterServerList.currentItem().text()
+        server = self.master_server_list[selection]
+        ip = server.get("ip")
+        name = server.get("name")
+        self.addServerToList(name, ip)
+
     # save servers list to file ====================================================== #
     # ================================================================================ #
     def saveServerList(self):
         servList = []
-        for i in range(len(self.serverIps)):
-            data = { "name" : self.ui.ServerList.item(i).text(), "ip" : self.serverIps[i] }
+        for i in range(len(self.saved_server_ips)):
+            data = {"name": self.ui.ServerList.item(i).text(), "ip": self.saved_server_ips[i]}
             servList.append(data)
         with open("lb2ServerList.json", "w") as f:
             json.dump(servList, f)
@@ -336,22 +398,22 @@ class MainWindow(QMainWindow):
     # ================================================================================ #
     def loadServerList(self):
         servList = []
-        fpath = os.path.join(os.getcwd(),"lb2ServerList.json")
+        fpath = os.path.join(os.getcwd(), "lb2ServerList.json")
         if not os.path.isfile(fpath):
             return
         with open(fpath, "r") as f:
             servList = json.load(f)
 
         for server in servList:
-            self.addServerToList(server["name"],server["ip"])
+            self.addServerToList(server["name"], server["ip"])
         return
 
     # add server to server list ====================================================== #
     # ================================================================================ #
-    def addServerToList(self,name,ip):
+    def addServerToList(self, name, ip):
         newItem = QtWidgets.QListWidgetItem()
         newItem.setText(name)
-        self.serverIps.append(ip)
+        self.saved_server_ips.append(ip)
         self.ui.ServerList.addItem(newItem)
         self.saveServerList()
         return
@@ -359,24 +421,24 @@ class MainWindow(QMainWindow):
     # open server editor ============================================================= #
     # ================================================================================ #
     def openServerEditor(self):
-        ip = self.serverIps[self.ui.ServerList.selectedIndexes()[0].row()]
+        ip = self.saved_server_ips[self.ui.ServerList.selectedIndexes()[0].row()]
         name = self.ui.ServerList.selectedItems()[0].text()
-        self.childWindow = EditServerMain.ChildWindow(self,name,ip,False)
+        self.childWindow = EditServerMain.ChildWindow(self, name, ip, False)
         self.childWindow.show()
         return
 
     # edit server in list ============================================================ #
     # ================================================================================ #
-    def editSelectedServer(self,name,ip):
-        self.serverIps[self.ui.ServerList.selectedIndexes()[0].row()] = ip
+    def editSelectedServer(self, name, ip):
+        self.saved_server_ips[self.ui.ServerList.selectedIndexes()[0].row()] = ip
         self.ui.ServerList.selectedItems()[0].setText(name)
         self.saveServerList()
         return
 
     # delete server in list ========================================================== #
     # ================================================================================ #
-    def deleteServerFromList(self,index):
-        self.serverIps.pop(index)
+    def deleteServerFromList(self, index):
+        self.saved_server_ips.pop(index)
         self.ui.ServerList.takeItem(index)
         self.saveServerList()
         return
@@ -390,7 +452,7 @@ class MainWindow(QMainWindow):
     # join current selected server in list =========================================== #
     # ================================================================================ #
     def joinSelectedServer(self):
-        ipString = self.serverIps[self.ui.ServerList.selectedIndexes()[0].row()]
+        ipString = self.saved_server_ips[self.ui.ServerList.selectedIndexes()[0].row()]
         os.system(self.getLaunchCommand() + " -connect " + ipString)
         return
 
@@ -405,35 +467,51 @@ class MainWindow(QMainWindow):
     # ================================================================================ #
     def startServer(self):
         launchCommand = self.ui.GameExecFilePathInput.text() + " -server"
-        if(not self.ui.DedicatedServerToggle.isChecked):
+        if (not self.ui.DedicatedServerToggle.isChecked):
             launchCommand = self.getLaunchCommand()
 
-        if(self.ui.ServerNameInput.text()!=""): launchCommand += " +servername " + self.ui.ServerNameInput.text()
-        if(self.ui.AdminPasswordInput.text()!=""): launchCommand += " +password " + self.ui.AdminPasswordInput.text()
-        if(self.ui.RoomInput.currentIndex()!=0):
+        if (self.ui.ServerNameInput.text() != ""): launchCommand += " +servername " + self.ui.ServerNameInput.text()
+        if (self.ui.AdminPasswordInput.text() != ""): launchCommand += " +password " + self.ui.AdminPasswordInput.text()
+        if (self.ui.RoomInput.currentIndex() != 0):
             launchCommand += " -id "
-            if(self.ui.RoomInput.currentIndex()==1): launchCommand += "33"
-            if(self.ui.RoomInput.currentIndex()==2): launchCommand += "28"
-            if(self.ui.RoomInput.currentIndex()==3): launchCommand += "38"
-            if(self.ui.RoomInput.currentIndex()==4): launchCommand += "31"
+            if (self.ui.RoomInput.currentIndex() == 1): launchCommand += "33"
+            if (self.ui.RoomInput.currentIndex() == 2): launchCommand += "28"
+            if (self.ui.RoomInput.currentIndex() == 3): launchCommand += "38"
+            if (self.ui.RoomInput.currentIndex() == 4): launchCommand += "31"
         launchCommand += " -gametype " + str(self.ui.GametypeInput.currentIndex())
         launchCommand += " +advancemap " + str(self.ui.AdvanceMapInput.currentIndex())
-        if(self.ui.PointLimitInput.text()!=""): launchCommand += " +pointlimit " + self.ui.PointLimitInput.text()
-        else: launchCommand += " +pointlimit 1000"
-        if(self.ui.TimeLimitInput.text()!=""): launchCommand += " +timelimit " + self.ui.TimeLimitInput.text()
-        else: launchCommand += " +timelimit 0"
-        if(self.ui.MaxPlayersInput.text()!=""): launchCommand += " +maxplayers " + self.ui.MaxPlayersInput.text()
-        else: launchCommand += " +maxplayers 8"
-        if(self.ui.ForceSkinInput.currentText()!=""): launchCommand += " +forceskin " + self.ui.ForceSkinInput.currentText().lower().replace(" ","")
-        if(self.ui.PortInput.text()!=""): launchCommand += " -port " + self.ui.PortInput.text()
-        else: launchCommand += " -port 5029"
-        if(self.ui.DisableWeaponsToggle.isChecked()): launchCommand += " +specialrings 1"
-        else: launchCommand += " +specialrings 0"
-        if(self.ui.SuddenDeathToggle.isChecked()): launchCommand += " +suddendeath 1"
-        else: launchCommand += " +suddendeath 0"
-        if(self.ui.DedicatedServerToggle.isChecked()): launchCommand += " -dedicated"
-        if(self.ui.UploadToggle.isChecked()): launchCommand += " +downloading 1"
-        else: launchCommand += " +downloading 0"
+        if (self.ui.PointLimitInput.text() != ""):
+            launchCommand += " +pointlimit " + self.ui.PointLimitInput.text()
+        else:
+            launchCommand += " +pointlimit 1000"
+        if (self.ui.TimeLimitInput.text() != ""):
+            launchCommand += " +timelimit " + self.ui.TimeLimitInput.text()
+        else:
+            launchCommand += " +timelimit 0"
+        if (self.ui.MaxPlayersInput.text() != ""):
+            launchCommand += " +maxplayers " + self.ui.MaxPlayersInput.text()
+        else:
+            launchCommand += " +maxplayers 8"
+        if (
+                self.ui.ForceSkinInput.currentText() != ""): launchCommand += " +forceskin " + self.ui.ForceSkinInput.currentText().lower().replace(
+            " ", "")
+        if (self.ui.PortInput.text() != ""):
+            launchCommand += " -port " + self.ui.PortInput.text()
+        else:
+            launchCommand += " -port 5029"
+        if (self.ui.DisableWeaponsToggle.isChecked()):
+            launchCommand += " +specialrings 1"
+        else:
+            launchCommand += " +specialrings 0"
+        if (self.ui.SuddenDeathToggle.isChecked()):
+            launchCommand += " +suddendeath 1"
+        else:
+            launchCommand += " +suddendeath 0"
+        if (self.ui.DedicatedServerToggle.isChecked()): launchCommand += " -dedicated"
+        if (self.ui.UploadToggle.isChecked()):
+            launchCommand += " +downloading 1"
+        else:
+            launchCommand += " +downloading 0"
 
         os.system(launchCommand)
         return
@@ -453,7 +531,7 @@ class MainWindow(QMainWindow):
         self.checkVersion()
 
         # april fools day stuff
-        if(fool):
+        if (fool):
             self.ui.PlayerSkinInput.setCurrentIndex(4)
             self.ui.PlayerColorInput.setCurrentIndex(57)
             self.ui.PlayerColorInput.setEnabled(False)
@@ -465,7 +543,7 @@ class MainWindow(QMainWindow):
     # ================================================================================ #
     def saveConfig(self):
         # generate the json data for the config
-        confJson = {"files":[],"player":{},"game":{"resolution":{}},"host":{},"settings":{}}
+        confJson = {"files": [], "player": {}, "game": {"resolution": {}}, "host": {}, "settings": {}}
         confJson["player"]["name"] = self.ui.PlayerNameInput.text()
         confJson["player"]["skin"] = str(self.ui.PlayerSkinInput.currentText())
         confJson["player"]["color"] = self.ui.PlayerColorInput.currentIndex()
@@ -498,7 +576,7 @@ class MainWindow(QMainWindow):
 
         with open("LauncherBlast2Conf.json", "w") as f:
             json.dump(confJson, f)
-        
+
         print("saved config")
         return
 
@@ -506,8 +584,8 @@ class MainWindow(QMainWindow):
     # ================================================================================ #
     def readConfig(self):
         configData = {}
-        fpath = os.path.join(os.getcwd(),"LauncherBlast2Conf.json")
-        #print(fpath)
+        fpath = os.path.join(os.getcwd(), "LauncherBlast2Conf.json")
+        # print(fpath)
         if not os.path.isfile(fpath):
             return 0
         with open(fpath, "r") as f:
@@ -519,7 +597,7 @@ class MainWindow(QMainWindow):
     # ================================================================================ #
     def loadConfig(self):
 
-        if(self.configData == 0):
+        if (self.configData == 0):
             return
 
         # now set all elements to their saved values
@@ -550,11 +628,10 @@ class MainWindow(QMainWindow):
         self.ui.LauncherThemeInput.setCurrentIndex(self.configData["settings"]["theme"])
         self.ui.SaveFilesToConfigToggle.setChecked(self.configData["settings"]["includefiles"])
 
-        if(self.ui.SaveFilesToConfigToggle.isChecked):
+        if (self.ui.SaveFilesToConfigToggle.isChecked):
             for f in self.configData["files"]:
                 self.addFile(f)
-        
-        
+
         self.changeSkinImage()
         return
 
@@ -562,20 +639,20 @@ class MainWindow(QMainWindow):
     # ================================================================================ #
     def applyStyle(self):
         # set up the launcher theme
-        if(self.configData == 0):
+        if (self.configData == 0):
             self.setStyleSheet(themes.main + themes.dark)
             return
 
-        if(self.configData["settings"]["theme"] == 0): chosentheme = themes.dark
-        if(self.configData["settings"]["theme"] == 1): chosentheme = themes.light
-        if(self.configData["settings"]["theme"] == 2): chosentheme = themes.blue
-        if(self.configData["settings"]["theme"] == 3): chosentheme = themes.orange
-        if(self.configData["settings"]["theme"] == 4): chosentheme = themes.red
-        if(self.configData["settings"]["theme"] == 5): chosentheme = themes.pink
-        if(self.configData["settings"]["theme"] == 6): chosentheme = themes.lightsout
+        if (self.configData["settings"]["theme"] == 0): chosentheme = themes.dark
+        if (self.configData["settings"]["theme"] == 1): chosentheme = themes.light
+        if (self.configData["settings"]["theme"] == 2): chosentheme = themes.blue
+        if (self.configData["settings"]["theme"] == 3): chosentheme = themes.orange
+        if (self.configData["settings"]["theme"] == 4): chosentheme = themes.red
+        if (self.configData["settings"]["theme"] == 5): chosentheme = themes.pink
+        if (self.configData["settings"]["theme"] == 6): chosentheme = themes.lightsout
 
         # april fools day stuff. pls dont spoil for others!11!1
-        if(fool):
+        if (fool):
             chosentheme = themes.pink
 
         self.setStyleSheet(themes.main + chosentheme)
@@ -585,13 +662,13 @@ class MainWindow(QMainWindow):
     # ================================================================================ #
     def exportScript(self):
         fileFilter = "Batch files (*.bat);;Shell scripts (*.sh)"
-        if(os.name=="posix"):
+        if (os.name == "posix"):
             fileFilter = "Shell scripts (*.sh);;Batch files (*.bat)"
         fileFilter += ";;All files (*)"
-        fileName,_ = QFileDialog.getSaveFileName(self,"Save script",os.getcwd(),fileFilter)
+        fileName, _ = QFileDialog.getSaveFileName(self, "Save script", os.getcwd(), fileFilter)
         if fileName:
             outText = ""
-            if(fileName.endswith(".sh")): outText += "#!bin/bash\n"
+            if (fileName.endswith(".sh")): outText += "#!bin/bash\n"
             outText += self.getLaunchCommand()
             with open(fileName, "w") as f:
                 f.write(outText)
@@ -602,39 +679,40 @@ class MainWindow(QMainWindow):
 
         link = "https://hitcoder-test.neocities.org/launcherblast-version.html"
         try:
-            f = urllib.request.urlopen(link,timeout=100)
+            f = urllib.request.urlopen(link, timeout=100)
         except:
             print("Version check error")
             return
-        
+
         myfile = f.read()
-        versionGot = (str(myfile).replace("b'","").replace("\\n'",""))
-        print("Latest: "+versionGot)
-        print("Current: "+versionString)
-        verNum = versionGot.replace("reBoot-","")
+        versionGot = (str(myfile).replace("b'", "").replace("\\n'", ""))
+        print("Latest: " + versionGot)
+        print("Current: " + versionString)
+        verNum = versionGot.replace("reBoot-", "")
 
         # check launcher version ===================================================== #
-        if(float(verNum) > float(versionString.replace("reBoot-",""))):
+        if (float(verNum) > float(versionString.replace("reBoot-", ""))):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Information)
             msg.setText("There is a new version available. Please check the SRB2 Message Board.")
             msg.setWindowTitle("Launcher update")
-            msg.setDetailedText("Running: "+versionString+"\nLatest: "+versionGot)
+            msg.setDetailedText("Running: " + versionString + "\nLatest: " + versionGot)
             msg.setStandardButtons(QMessageBox.Ok)
             msg.exec_()
-        elif (float(verNum) < float(versionString.replace("reBoot-",""))):
+        elif (float(verNum) < float(versionString.replace("reBoot-", ""))):
             print("Greetings, time traveller.")
         else:
-            print("up-to-date ("+versionString+")")
-        
+            print("up-to-date (" + versionString + ")")
+
 
 def main():
     app = QApplication(sys.argv)
     w = MainWindow(app)
     w.show()
     t = QtCore.QTimer()
-    t.singleShot(0,w.applicationStarted)
-    sys.exit(app.exec_())
+    t.singleShot(0, w.applicationStarted)
+    sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     main()

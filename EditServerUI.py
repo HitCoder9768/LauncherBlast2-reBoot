@@ -7,7 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 import fix_qt_import_error
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 
 class Ui_Dialog(object):
