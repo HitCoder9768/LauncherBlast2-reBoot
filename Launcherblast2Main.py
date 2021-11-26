@@ -16,9 +16,11 @@ from PySide6.QtWidgets import QFileDialog, QMenu, QMessageBox
 
 import EditServerMain
 import characterText
+import modding
 import srb2query
-from LauncherUI import *
+import modding.downloader
 from modding import MBQuery
+from LauncherUI import *
 from qss import themes
 
 fool = date.today() == date(date.today().year, 4, 1)
@@ -374,14 +376,8 @@ class MainWindow(QMainWindow):
         selection = self.ui.ModsList.currentItem().text()
         mod = self.mods_list[selection]
         path = self.ui.GameExecFilePathInput.text()
-        self.download_url_to_path(path, mod.download_url)
-
-    def download_url_to_path(self, path, url):
-        parsed_url = urlparse(url)
-        full_path = path + "/" + os.path.basename(parsed_url.path)
-        print(full_path)
-        urlretrieve(url, full_path)
-        return full_path
+        modding.downloader.download_mod(path, mod.download_url)
+        print("done")
 
     def append_mod_to_list(self, mod):
         new_item = QtWidgets.QListWidgetItem()
@@ -395,12 +391,14 @@ class MainWindow(QMainWindow):
         self.ui.ModBrowser.setText('\n'.join(description))
 
     def refresh_mods_list(self):
+        # TODO: multithreading to get rid of lag
         self.ui.ModsList.clear()
         self.le_queue.put(self.ui.ModTypeCombo.currentText())
         if not self.mb_query_thread.is_alive():
             self.mb_query_thread.start()
 
     def query_mb(self, queue: queue.Queue):
+        # TODO: better multithreading to update list box
         while not self.end_thread:
             time.sleep(0.5)
             while not self.le_queue.empty():

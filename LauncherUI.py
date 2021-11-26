@@ -461,15 +461,35 @@ class Ui_MainWindow(object):
         self.verticalLayout_21.setObjectName(u"verticalLayout_21")
         self.horizontalLayout_21 = QHBoxLayout()
         self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
+        self.verticalLayout_26 = QVBoxLayout()
+        self.verticalLayout_26.setObjectName(u"verticalLayout_26")
+        self.label_7 = QLabel(self.tab_4)
+        self.label_7.setObjectName(u"label_7")
+
+        self.verticalLayout_26.addWidget(self.label_7)
+
         self.ModsList = QListWidget(self.tab_4)
         self.ModsList.setObjectName(u"ModsList")
 
-        self.horizontalLayout_21.addWidget(self.ModsList)
+        self.verticalLayout_26.addWidget(self.ModsList)
+
+
+        self.horizontalLayout_21.addLayout(self.verticalLayout_26)
+
+        self.verticalLayout_25 = QVBoxLayout()
+        self.verticalLayout_25.setObjectName(u"verticalLayout_25")
+        self.label_6 = QLabel(self.tab_4)
+        self.label_6.setObjectName(u"label_6")
+
+        self.verticalLayout_25.addWidget(self.label_6)
 
         self.ModBrowser = QTextBrowser(self.tab_4)
         self.ModBrowser.setObjectName(u"ModBrowser")
 
-        self.horizontalLayout_21.addWidget(self.ModBrowser)
+        self.verticalLayout_25.addWidget(self.ModBrowser)
+
+
+        self.horizontalLayout_21.addLayout(self.verticalLayout_25)
 
 
         self.verticalLayout_21.addLayout(self.horizontalLayout_21)
@@ -1378,6 +1398,8 @@ class Ui_MainWindow(object):
         self.GameFilesExecuteScriptLabel.setText(QCoreApplication.translate("MainWindow", u"EXECUTE SCRIPT", None))
         self.GameFilesExecScrBrowseButton.setText(QCoreApplication.translate("MainWindow", u"Browse...", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QCoreApplication.translate("MainWindow", u"Files", None))
+        self.label_7.setText(QCoreApplication.translate("MainWindow", u"Mod List:", None))
+        self.label_6.setText(QCoreApplication.translate("MainWindow", u"About Mod:", None))
         self.ModTypeCombo.setItemText(0, QCoreApplication.translate("MainWindow", u"Maps", None))
         self.ModTypeCombo.setItemText(1, QCoreApplication.translate("MainWindow", u"Characters", None))
         self.ModTypeCombo.setItemText(2, QCoreApplication.translate("MainWindow", u"Lua", None))

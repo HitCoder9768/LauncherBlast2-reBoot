@@ -25,7 +25,7 @@ class Mod:
 class MBQuery:
     """
     Class containing methods for querying the SRB2 Message Board.
-    Do not put any methods for downloading content in here, put them in Downloader.py
+    Do not put any methods for downloading content in here, put them in downloader.py
     :var self.mb_link: contains the base URL for the mb
     """
 
