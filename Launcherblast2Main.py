@@ -1,20 +1,16 @@
-import html
-
-from PySide6 import QtGui, QtCore, QtWidgets
-
-import characterText
-import feedparser
 import json
 import os
+import sys
 import urllib
 import urllib.parse
-import sys
-import requests
 from datetime import date
 
-from PySide6.QtWidgets import QMainWindow, QApplication, QFileDialog, QMenu, QMessageBox, QLayout
+import feedparser
+from PySide6 import QtGui, QtCore, QtWidgets
+from PySide6.QtWidgets import QFileDialog, QMenu, QMessageBox
 
 import EditServerMain
+import characterText
 import srb2query
 from LauncherUI import *
 from qss import themes
@@ -583,21 +579,21 @@ class MainWindow(QMainWindow):
     # read launcher config json file ================================================= #
     # ================================================================================ #
     def read_config(self):
-        configData = {}
+        config_data = {}
         fpath = os.path.join(os.getcwd(), "LauncherBlast2Conf.json")
         # print(fpath)
         if not os.path.isfile(fpath):
             return 0
         with open(fpath, "r") as f:
-            configData = json.load(f)
+            config_data = json.load(f)
 
-        return configData
+        return config_data
 
     # load launcher config =========================================================== #
     # ================================================================================ #
     def load_config(self):
 
-        if (self.configData == 0):
+        if self.configData == 0:
             return
 
         # now set all elements to their saved values
