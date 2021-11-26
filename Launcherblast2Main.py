@@ -13,6 +13,7 @@ from urllib.parse import urlparse
 import feedparser
 from PySide6 import QtGui, QtCore, QtWidgets
 from PySide6.QtWidgets import QFileDialog, QMenu, QMessageBox
+from PySide6.QtCore import Signal
 
 import EditServerMain
 import characterText
@@ -27,8 +28,71 @@ fool = date.today() == date(date.today().year, 4, 1)
 
 versionString = "reBoot-2.0"
 
+class QueryMessageBoard(QtCore.QThread):
+    mod_description_sig1 = Signal(str)
+    mod_list_sig1 = Signal(dict)
+
+    def __init__(self, parent=None):
+        QtCore.QThread.__init__(self, parent)
+        self.mb_query = MBQuery()
+        self.mod = None
+        self.get_mod_description = False
+        self.get_mods = False
+        self.mods_type = None
+
+    def on_request_mod_list(self, mods_type):
+        self.get_mods = True
+        self.mods_type = mods_type
+
+    def on_request_mod_desc(self, mod):
+        self.get_mod_description = True
+        self.mod = mod
+
+    def run(self):
+        self.running = True
+        while self.running:
+            if self.get_mods:
+                self.mods_list = {}
+                subforum_url = None
+                if self.mods_type == "Maps":
+                    subforum_url = self.mb_query.maps_sublink
+                if self.mods_type == "Characters":
+                    subforum_url = self.mb_query.characters_sublink
+                if self.mods_type == "Lua":
+                    subforum_url = self.mb_query.lua_sublink
+                if self.mods_type == "Assets":
+                    subforum_url = self.mb_query.assets_sublink
+                if self.mods_type == "Misc":
+                    subforum_url = self.mb_query.misc_sublink
+                mods = self.mb_query.get_mods(subforum_url)
+                for mod in mods:
+                    entry_text = mod.name
+                    self.mods_list[entry_text] = mod
+
+                self.mod_list_sig1.emit(self.mods_list)
+
+                # Reset variables
+                self.mods_list = {}
+                self.get_mods = False
+                self.mods_type = None
+
+            if self.get_mod_description:
+                if self.mod:
+                    description = self.mb_query.get_mod_description(self.mod)
+                    description = '\n'.join(description)
+                    self.mod_description_sig1.emit(description)
+
+                # Reset variables
+                self.mod = None
+                self.get_mod_description = False
+
+            time.sleep(1)
+
 
 class MainWindow(QMainWindow):
+    mod_description_sig = Signal(object)
+    mod_list_sig = Signal(dict)
+
     def __init__(self, app):
         super().__init__()
 
@@ -45,17 +109,23 @@ class MainWindow(QMainWindow):
         # server ips stored internally so u don't dox people's ips if you're streaming or smth
         self.saved_server_ips = []
 
-        # Dict associating QListWidget items with server data:
+        # Dict associate master server widget items with server data
         self.master_server_list = {}
-        self.load_ms_list()
+        self.load_ms_list()  # populates master server list when the program first runs
 
-        # Dict associating QListWidget items with mods:
+        # Dict associating mod list widget items with mods:
         self.mods_list = {}
-        self.refresh_mods = True
-        self.le_queue = queue.Queue()
-        self.mb_query_thread = threading.Thread(target=self.query_mb, args=[self.le_queue])
-        self.end_thread = False
+
+        # SRB2 Message Board Data
         self.mb = MBQuery()
+
+        # Mod Downloader Multithreading
+        self.mb_qthread = QueryMessageBoard()
+        self.mb_qthread.start()
+        self.mod_list_sig.connect(self.mb_qthread.on_request_mod_list)
+        self.mod_description_sig.connect(self.mb_qthread.on_request_mod_desc)
+        self.mb_qthread.mod_list_sig1.connect(self.on_mod_list)
+        self.mb_qthread.mod_description_sig1.connect(self.on_mod_description)
 
         # load servers from file ===================================================== #
         # self.loadServerList()
@@ -379,65 +449,30 @@ class MainWindow(QMainWindow):
         modding.downloader.download_mod(path, mod.download_url)
         print("done")
 
-    def append_mod_to_list(self, mod):
+    def append_mod_to_list(self, mod_name):
         new_item = QtWidgets.QListWidgetItem()
-        new_item.setText(mod)
+        new_item.setText(mod_name)
         self.ui.ModsList.addItem(new_item)
 
     def load_mod_page(self):
-        selection = self.ui.ModsList.currentItem().text()
-        mod = self.mods_list[selection]
-        description = self.mb.get_mod_description(mod)
-        self.ui.ModBrowser.setText('\n'.join(description))
+        if self.mods_list:
+            selection = self.ui.ModsList.currentItem().text()
+            mod = self.mods_list[selection]
+            self.mod_description_sig.emit(mod)
 
     def refresh_mods_list(self):
         # TODO: multithreading to get rid of lag
         self.ui.ModsList.clear()
-        self.le_queue.put(self.ui.ModTypeCombo.currentText())
-        if not self.mb_query_thread.is_alive():
-            self.mb_query_thread.start()
+        self.mod_list_sig.emit(self.ui.ModTypeCombo.currentText())
 
-    def query_mb(self, queue: queue.Queue):
-        # TODO: better multithreading to update list box
-        while not self.end_thread:
-            time.sleep(0.5)
-            while not self.le_queue.empty():
-                output = self.le_queue.get()
-                self.le_queue.task_done()
-                self.mods_list = {}
+    def on_mod_description(self, description):
+        self.ui.ModBrowser.setText(description.strip())
 
-                if output == "Maps":
-                    self.mb.get_maps()
-                    for mod in self.mb.maps:
-                        entry_text = mod.name
-                        self.mods_list[entry_text] = mod
-
-                if output == "Characters":
-                    self.mb.get_characters()
-                    for mod in self.mb.characters:
-                        entry_text = mod.name
-                        self.mods_list[entry_text] = mod
-
-                if output == "Lua":
-                    self.mb.get_lua()
-                    for mod in self.mb.lua:
-                        entry_text = mod.name
-                        self.mods_list[entry_text] = mod
-
-                if output == "Misc":
-                    self.mb.get_misc()
-                    for mod in self.mb.misc:
-                        entry_text = mod.name
-                        self.mods_list[entry_text] = mod
-
-                if output == "Assets":
-                    self.mb.get_assets()
-                    for mod in self.mb.assets:
-                        entry_text = mod.name
-                        self.mods_list[entry_text] = mod
-
-                for mod in self.mods_list:
-                    self.append_mod_to_list(mod)
+    def on_mod_list(self, mod_list):
+        self.ui.ModsList.clear()
+        self.mods_list = mod_list
+        for item in self.mods_list:
+            self.append_mod_to_list(item)
 
     def load_ms_list(self):
         ms_data = server_query.get_server_list(server_query.ms_url)

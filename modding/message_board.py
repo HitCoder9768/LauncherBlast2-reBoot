@@ -26,7 +26,7 @@ class MBQuery:
     """
     Class containing methods for querying the SRB2 Message Board.
     Do not put any methods for downloading content in here, put them in downloader.py
-    :var self.mb_link: contains the base URL for the mb
+    :var self.mb_link: contains the base URL for the mb_query
     """
 
     def __init__(self):
@@ -174,9 +174,9 @@ class MBQuery:
 """
 Example:
 
-mb = MBQuery()
-mb.get_maps()
-mod = mb.get_mod_by_name("The Confused Maps [Addon for BattleMod]", mb.maps)
+mb_query = MBQuery()
+mb_query.get_maps()
+mod = mb_query.get_mod_by_name("The Confused Maps [Addon for BattleMod]", mb_query.maps)
 print(str(mod.name))
-print(mb.get_mod_description(mod))
+print(mb_query.get_mod_description(mod))
 """
