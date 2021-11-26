@@ -17,7 +17,7 @@ from PySide6.QtWidgets import QFileDialog, QMenu, QMessageBox
 import EditServerMain
 import characterText
 import modding
-import srb2query
+import server_query
 import modding.downloader
 from modding import MBQuery
 from LauncherUI import *
@@ -440,7 +440,7 @@ class MainWindow(QMainWindow):
                     self.append_mod_to_list(mod)
 
     def load_ms_list(self):
-        ms_data = srb2query.get_server_list(srb2query.ms_url)
+        ms_data = server_query.get_server_list(server_query.ms_url)
         del self.master_server_list
         self.master_server_list = {}
         for server in ms_data:
