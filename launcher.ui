@@ -261,8 +261,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>158</width>
-                <height>41</height>
+                <width>187</width>
+                <height>45</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -1007,14 +1007,7 @@
                                </widget>
                               </item>
                               <item>
-                               <widget class="QWidget" name="ModBrowser" native="true">
-                                <property name="sizePolicy">
-                                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                                  <horstretch>0</horstretch>
-                                  <verstretch>0</verstretch>
-                                 </sizepolicy>
-                                </property>
-                               </widget>
+                               <widget class="QTextBrowser" name="ModBrowser"/>
                               </item>
                              </layout>
                             </item>
@@ -1927,8 +1920,8 @@ font-size: 12pt;</string>
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>278</width>
-                           <height>536</height>
+                           <width>314</width>
+                           <height>596</height>
                           </rect>
                          </property>
                          <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -2345,7 +2338,7 @@ font-size: 12pt;</string>
                            <x>0</x>
                            <y>0</y>
                            <width>348</width>
-                           <height>313</height>
+                           <height>325</height>
                           </rect>
                          </property>
                          <property name="styleSheet">
@@ -2790,7 +2783,7 @@ font-size: 12pt;</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>87</width>
+                <width>98</width>
                 <height>87</height>
                </rect>
               </property>
@@ -2894,8 +2887,8 @@ p, li { white-space: pre-wrap; }
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>216</width>
-                <height>116</height>
+                <width>259</width>
+                <height>128</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_18">

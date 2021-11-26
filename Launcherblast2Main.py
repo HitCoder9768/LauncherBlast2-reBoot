@@ -15,6 +15,7 @@ import feedparser
 from PySide6 import QtGui, QtCore, QtWidgets
 from PySide6.QtWidgets import QFileDialog, QMenu, QMessageBox
 from PySide6.QtCore import Signal
+from PySide6.QtWebEngineWidgets import QWebEngineView
 
 import EditServerMain
 import characterText
@@ -80,7 +81,6 @@ class QueryMessageBoard(QtCore.QThread):
             if self.get_mod_description:
                 if self.mod:
                     description = self.mb_query.get_mod_description(self.mod)
-                    print(description)
                     self.mod_description_sig1.emit(description)
 
                 # Reset variables
@@ -448,7 +448,6 @@ class MainWindow(QMainWindow):
         mod = self.mods_list[selection]
         path = self.ui.GameExecFilePathInput.text()
         modding.downloader.download_mod(path, mod.download_url)
-        print("done")
 
     def append_mod_to_list(self, mod_name):
         new_item = QtWidgets.QListWidgetItem()
