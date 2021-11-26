@@ -17,8 +17,8 @@ class ChildWindow(QMainWindow):
     
     def returnAndClose(self):
         if(self.createNew):
-            self.parentWindow.addServerToList(self.ui.ServerNameInput.text(),self.ui.ServerAddressInput.text())
+            self.parentWindow.add_server_to_list(self.ui.ServerNameInput.text(), self.ui.ServerAddressInput.text())
         else:
-            self.parentWindow.editSelectedServer(self.ui.ServerNameInput.text(),self.ui.ServerAddressInput.text())
+            self.parentWindow.edit_selected_server(self.ui.ServerNameInput.text(), self.ui.ServerAddressInput.text())
         self.close()
         return
