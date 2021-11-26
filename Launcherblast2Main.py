@@ -53,6 +53,7 @@ class MainWindow(QMainWindow):
         self.le_queue = queue.Queue()
         self.mb_query_thread = threading.Thread(target=self.query_mb, args=[self.le_queue])
         self.end_thread = False
+        self.mb = MBQuery()
 
         # load servers from file ===================================================== #
         # self.loadServerList()
@@ -96,13 +97,12 @@ class MainWindow(QMainWindow):
         self.ui.SettingsTabButton.clicked.connect(lambda: self.change_main_tab(3))
 
         # game "tabs" ================================================================ #
-        self.ui.ProfileTabButton.clicked.connect(lambda: self.changeGameTab(0))
-        self.ui.FilesTabButton.clicked.connect(lambda: self.changeGameTab(1))
-        self.ui.GameSettingsTabButton.clicked.connect(lambda: self.changeGameTab(2))
-        self.ui.PlayerSetupTabButton.clicked.connect(lambda: self.changeGameTab(3))
-        self.ui.HostGameTabButton.clicked.connect(lambda: self.changeGameTab(4))
-        self.ui.JoinGameTabButton.clicked.connect(lambda: self.changeGameTab(5))
-        self.ui.ModdingTabButton.clicked.connect(lambda: self.changeGameTab(6))
+        self.ui.ProfileTabButton.clicked.connect(lambda: self.change_game_tab(0))
+        self.ui.FilesTabButton.clicked.connect(lambda: self.change_game_tab(1))
+        self.ui.GameSettingsTabButton.clicked.connect(lambda: self.change_game_tab(2))
+        self.ui.PlayerSetupTabButton.clicked.connect(lambda: self.change_game_tab(3))
+        self.ui.HostGameTabButton.clicked.connect(lambda: self.change_game_tab(4))
+        self.ui.JoinGameTabButton.clicked.connect(lambda: self.change_game_tab(5))
 
         # files list buttons ========================================================= #
         self.ui.GameFilesClearButton.clicked.connect(self.clear_files_list)
@@ -117,6 +117,7 @@ class MainWindow(QMainWindow):
         # modding list buttons ======================================================= #
         self.ui.RefreshModsButton.clicked.connect(self.refresh_mods_list)
         self.ui.DownloadModButton.clicked.connect(self.download_mod)
+        self.ui.ModsList.itemSelectionChanged.connect(self.load_mod_page)
 
         # server list buttons ======================================================== #
         self.ui.AddServerButton.clicked.connect(self.show_add_server_dialog)
@@ -365,7 +366,7 @@ class MainWindow(QMainWindow):
 
     # change game tab function ======================================================= #
     # ================================================================================ #
-    def changeGameTab(self, index):
+    def change_game_tab(self, index):
         self.ui.GameContentStackedWidget.setCurrentIndex(index)
         return
 
@@ -387,15 +388,19 @@ class MainWindow(QMainWindow):
         new_item.setText(mod)
         self.ui.ModsList.addItem(new_item)
 
+    def load_mod_page(self):
+        selection = self.ui.ModsList.currentItem().text()
+        mod = self.mods_list[selection]
+        description = self.mb.get_mod_description(mod)
+        self.ui.ModBrowser.setText('\n'.join(description))
+
     def refresh_mods_list(self):
         self.ui.ModsList.clear()
-        self.le_queue.put(self.ui.ModTypeButton.currentText())
+        self.le_queue.put(self.ui.ModTypeCombo.currentText())
         if not self.mb_query_thread.is_alive():
             self.mb_query_thread.start()
 
     def query_mb(self, queue: queue.Queue):
-        mb = MBQuery()
-
         while not self.end_thread:
             time.sleep(0.5)
             while not self.le_queue.empty():
@@ -404,32 +409,32 @@ class MainWindow(QMainWindow):
                 self.mods_list = {}
 
                 if output == "Maps":
-                    mb.get_maps()
-                    for mod in mb.maps:
+                    self.mb.get_maps()
+                    for mod in self.mb.maps:
                         entry_text = mod.name
                         self.mods_list[entry_text] = mod
 
                 if output == "Characters":
-                    mb.get_characters()
-                    for mod in mb.characters:
+                    self.mb.get_characters()
+                    for mod in self.mb.characters:
                         entry_text = mod.name
                         self.mods_list[entry_text] = mod
 
                 if output == "Lua":
-                    mb.get_lua()
-                    for mod in mb.lua:
+                    self.mb.get_lua()
+                    for mod in self.mb.lua:
                         entry_text = mod.name
                         self.mods_list[entry_text] = mod
 
                 if output == "Misc":
-                    mb.get_misc()
-                    for mod in mb.misc:
+                    self.mb.get_misc()
+                    for mod in self.mb.misc:
                         entry_text = mod.name
                         self.mods_list[entry_text] = mod
 
                 if output == "Assets":
-                    mb.get_assets()
-                    for mod in mb.assets:
+                    self.mb.get_assets()
+                    for mod in self.mb.assets:
                         entry_text = mod.name
                         self.mods_list[entry_text] = mod
 

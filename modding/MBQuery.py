@@ -1,6 +1,26 @@
 from lxml import html
 import requests
 
+mb_url = "https://mb.srb2.org"
+
+class Mod:
+    def __init__(self, name, thread_url):
+        self.mb_base_url = mb_url
+        self.name = name
+        self.thread_base_url = thread_url
+        self.description = None
+        self.download_url = None
+        self.url = self.mb_base_url + self.thread_base_url
+        self.set_download_url()
+        self.html = None
+
+    def set_download_url(self):
+        self.url = self.mb_base_url + self.thread_base_url
+        if not self.thread_base_url:
+            return None
+        self.download_url = self.url + "download"
+        return self.download_url
+
 
 class MBQuery:
     """
@@ -10,7 +30,7 @@ class MBQuery:
     """
 
     def __init__(self):
-        self.mb_link = "https://mb.srb2.org"
+        self.mb_link = mb_url
         self.maps_sublink = self.mb_link + "/addons/categories/maps.4/"
         self.characters_sublink = self.mb_link + "/addons/categories/characters.5/"
         self.lua_sublink = self.mb_link + "/addons/categories/lua.7/"
@@ -79,8 +99,7 @@ class MBQuery:
 
         # Make our list of mods
         for index in range(len(mod_names)):
-            mod = Mod(mod_names[index])
-            mod.thread_url = mod_links[index]
+            mod = Mod(mod_names[index], mod_links[index])
             mod_list.append(mod)
 
         return mod_list
@@ -99,12 +118,32 @@ class MBQuery:
         response.raw.decode_content = True
         return html.parse(response.raw)
 
-    def get_mod_download_url(self, mod_thread_name, mod_list):
-        mod_download_url = None
+    def get_mod_download_url(self, mod):
+        if not mod.download_url:
+            mod.set_download_url()
+        return mod.download_url
+
+    def get_mod_by_name(self, name, mod_list):
         for mod in mod_list:
-            if mod.name == mod_thread_name:
-                mod_download_url = mod.set_download_url()
-        return mod_download_url
+            if mod.name == name:
+                return mod
+        return Mod("blank", "blank")  # Return a blank mod so functions that rely on this function don't crash
+
+    def get_mod_page_html(self, mod: Mod):
+        url = mod.url
+        print(url)
+        response = requests.get(url,
+                                stream=True,
+                                headers=self.headers)
+        response.raw.decode_content = True
+        mod.html = html.parse(response.raw)
+        return html.parse(response.raw)
+
+    def get_mod_description(self, mod: Mod):
+        if not mod.html:
+            self.get_mod_page_html(mod)
+        mod.description = mod.html.xpath('//div[@class="bbWrapper"]/text()')
+        return mod.description
 
     def get_list_of_thread_names(self, parsed_html):
         """
@@ -116,9 +155,6 @@ class MBQuery:
 
     def get_list_of_thread_links(self, parsed_html):
         return parsed_html.xpath('.//div[@class="structItem-title"]/*[@data-tp-primary="on"]/@href')
-
-    def get_mod_description(self):
-        pass
 
     def get_mod_version(self):
         pass
@@ -135,16 +171,12 @@ class MBQuery:
     def get_history_list(self):
         pass
 
+"""
+Example:
 
-class Mod:
-    def __init__(self, name, thread_url=None, description=None, download_url=None):
-        self.name = name
-        self.thread_url = thread_url
-        self.description = description
-        self.download_url = download_url
-
-    def set_download_url(self, mb_link="https://mb.srb2.org"):
-        if not self.thread_url:
-            return None
-        self.download_url = mb_link + self.thread_url + "download"
-        return self.download_url
+mb = MBQuery()
+mb.get_maps()
+mod = mb.get_mod_by_name("The Confused Maps [Addon for BattleMod]", mb.maps)
+print(str(mod.name))
+print(mb.get_mod_description(mod))
+"""
