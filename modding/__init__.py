@@ -1,2 +1,2 @@
-from modding.MessageBoard import MessageBoard
+from modding.MBQuery import MBQuery
 from modding.Downloader import Downloader

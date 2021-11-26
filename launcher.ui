@@ -261,8 +261,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>190</width>
-                <height>42</height>
+                <width>184</width>
+                <height>36</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -361,21 +361,6 @@
                   <enum>QFrame::Raised</enum>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_2">
-                  <property name="spacing">
-                   <number>0</number>
-                  </property>
-                  <property name="leftMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
                   <item>
                    <widget class="QRadioButton" name="ProfileTabButton">
                     <property name="minimumSize">
@@ -402,6 +387,25 @@
                     </property>
                     <property name="text">
                      <string>Files</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="ModdingTabButton">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>36</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Modding</string>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>32</width>
+                      <height>32</height>
+                     </size>
                     </property>
                    </widget>
                   </item>
@@ -511,7 +515,7 @@
                   <item>
                    <widget class="QStackedWidget" name="GameContentStackedWidget">
                     <property name="currentIndex">
-                     <number>5</number>
+                     <number>6</number>
                     </property>
                     <widget class="QWidget" name="ProfilePage">
                      <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -1815,8 +1819,8 @@ font-size: 12pt;</string>
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>326</width>
-                           <height>642</height>
+                           <width>625</width>
+                           <height>702</height>
                           </rect>
                          </property>
                          <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -2232,8 +2236,8 @@ font-size: 12pt;</string>
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>659</width>
-                           <height>420</height>
+                           <width>646</width>
+                           <height>411</height>
                           </rect>
                          </property>
                          <property name="styleSheet">
@@ -2498,6 +2502,87 @@ font-size: 12pt;</string>
                       </item>
                      </layout>
                     </widget>
+                    <widget class="QWidget" name="ModdingPage">
+                     <layout class="QVBoxLayout" name="verticalLayout_17">
+                      <item>
+                       <widget class="QListWidget" name="ModsList"/>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_19">
+                        <item>
+                         <spacer name="horizontalSpacer_7">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="label_6">
+                          <property name="text">
+                           <string>Category:</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QComboBox" name="ModTypeButton">
+                          <item>
+                           <property name="text">
+                            <string>Maps</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Lua</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Characters</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Misc</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Assets</string>
+                           </property>
+                          </item>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="RefreshModsButton">
+                          <property name="text">
+                           <string>Refresh</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="InfoButton">
+                          <property name="text">
+                           <string>Overview</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="DownloadModButton">
+                          <property name="text">
+                           <string>Download</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </widget>
                    </widget>
                   </item>
                  </layout>
@@ -2678,8 +2763,8 @@ font-size: 12pt;</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>84</width>
-                <height>70</height>
+                <width>87</width>
+                <height>87</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_19">
@@ -2782,8 +2867,8 @@ p, li { white-space: pre-wrap; }
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>261</width>
-                <height>134</height>
+                <width>255</width>
+                <height>130</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_18">

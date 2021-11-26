@@ -203,13 +203,3 @@ class Downloader:
     def download_latest(self, system="windows"):
         self.download_version("latest", system=system)
 
-
-def main():
-    d = Downloader()
-    #d.download_version("latest", "windows")
-    d.download_version("2.2.8", "windows")
-    if d.is_srb2_update():
-        d.download_latest()
-
-
-main()

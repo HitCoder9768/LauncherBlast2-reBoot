@@ -4,6 +4,11 @@ import sys
 import urllib
 import urllib.parse
 from datetime import date
+import threading
+import queue
+import time
+from urllib.request import urlretrieve
+from urllib.parse import urlparse
 
 import feedparser
 from PySide6 import QtGui, QtCore, QtWidgets
@@ -13,6 +18,7 @@ import EditServerMain
 import characterText
 import srb2query
 from LauncherUI import *
+from modding import MBQuery
 from qss import themes
 
 fool = date.today() == date(date.today().year, 4, 1)
@@ -40,6 +46,13 @@ class MainWindow(QMainWindow):
         # Dict associating QListWidget items with server data:
         self.master_server_list = {}
         self.load_ms_list()
+
+        # Dict associating QListWidget items with mods:
+        self.mods_list = {}
+        self.refresh_mods = True
+        self.le_queue = queue.Queue()
+        self.mb_query_thread = threading.Thread(target=self.query_mb, args=[self.le_queue])
+        self.end_thread = False
 
         # load servers from file ===================================================== #
         # self.loadServerList()
@@ -89,6 +102,7 @@ class MainWindow(QMainWindow):
         self.ui.PlayerSetupTabButton.clicked.connect(lambda: self.changeGameTab(3))
         self.ui.HostGameTabButton.clicked.connect(lambda: self.changeGameTab(4))
         self.ui.JoinGameTabButton.clicked.connect(lambda: self.changeGameTab(5))
+        self.ui.ModdingTabButton.clicked.connect(lambda: self.changeGameTab(6))
 
         # files list buttons ========================================================= #
         self.ui.GameFilesClearButton.clicked.connect(self.clear_files_list)
@@ -99,6 +113,10 @@ class MainWindow(QMainWindow):
         self.ui.GameFilesSaveButton.clicked.connect(self.save_file_list)
         self.ui.GameFilesLoadButton.clicked.connect(self.load_file_list)
         self.ui.GameFilesExecScrBrowseButton.clicked.connect(self.set_exec_file_path)
+
+        # modding list buttons ======================================================= #
+        self.ui.RefreshModsButton.clicked.connect(self.refresh_mods_list)
+        self.ui.DownloadModButton.clicked.connect(self.download_mod)
 
         # server list buttons ======================================================== #
         self.ui.AddServerButton.clicked.connect(self.show_add_server_dialog)
@@ -350,6 +368,73 @@ class MainWindow(QMainWindow):
     def changeGameTab(self, index):
         self.ui.GameContentStackedWidget.setCurrentIndex(index)
         return
+
+    def download_mod(self):
+        selection = self.ui.ModsList.currentItem().text()
+        mod = self.mods_list[selection]
+        path = self.ui.GameExecFilePathInput.text()
+        self.download_url_to_path(path, mod.download_url)
+
+    def download_url_to_path(self, path, url):
+        parsed_url = urlparse(url)
+        full_path = path + "/" + os.path.basename(parsed_url.path)
+        print(full_path)
+        urlretrieve(url, full_path)
+        return full_path
+
+    def append_mod_to_list(self, mod):
+        new_item = QtWidgets.QListWidgetItem()
+        new_item.setText(mod)
+        self.ui.ModsList.addItem(new_item)
+
+    def refresh_mods_list(self):
+        self.ui.ModsList.clear()
+        self.le_queue.put(self.ui.ModTypeButton.currentText())
+        if not self.mb_query_thread.is_alive():
+            self.mb_query_thread.start()
+
+    def query_mb(self, queue: queue.Queue):
+        mb = MBQuery()
+
+        while not self.end_thread:
+            time.sleep(0.5)
+            while not self.le_queue.empty():
+                output = self.le_queue.get()
+                self.le_queue.task_done()
+                self.mods_list = {}
+
+                if output == "Maps":
+                    mb.get_maps()
+                    for mod in mb.maps:
+                        entry_text = mod.name
+                        self.mods_list[entry_text] = mod
+
+                if output == "Characters":
+                    mb.get_characters()
+                    for mod in mb.characters:
+                        entry_text = mod.name
+                        self.mods_list[entry_text] = mod
+
+                if output == "Lua":
+                    mb.get_lua()
+                    for mod in mb.lua:
+                        entry_text = mod.name
+                        self.mods_list[entry_text] = mod
+
+                if output == "Misc":
+                    mb.get_misc()
+                    for mod in mb.misc:
+                        entry_text = mod.name
+                        self.mods_list[entry_text] = mod
+
+                if output == "Assets":
+                    mb.get_assets()
+                    for mod in mb.assets:
+                        entry_text = mod.name
+                        self.mods_list[entry_text] = mod
+
+                for mod in self.mods_list:
+                    self.append_mod_to_list(mod)
 
     def load_ms_list(self):
         ms_data = srb2query.get_server_list(srb2query.ms_url)

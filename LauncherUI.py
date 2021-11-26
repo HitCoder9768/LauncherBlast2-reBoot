@@ -123,7 +123,7 @@ class Ui_MainWindow(object):
         self.NewsScrollArea.setWidgetResizable(True)
         self.NewsScrollAreaContent = QWidget()
         self.NewsScrollAreaContent.setObjectName(u"NewsScrollAreaContent")
-        self.NewsScrollAreaContent.setGeometry(QRect(0, 0, 190, 42))
+        self.NewsScrollAreaContent.setGeometry(QRect(0, 0, 184, 36))
         self.NewsScrollAreaContent.setStyleSheet(u"")
         self.verticalLayout_20 = QVBoxLayout(self.NewsScrollAreaContent)
         self.verticalLayout_20.setObjectName(u"verticalLayout_20")
@@ -166,9 +166,7 @@ class Ui_MainWindow(object):
         self.GamePageTabsFrame.setFrameShape(QFrame.StyledPanel)
         self.GamePageTabsFrame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_2 = QVBoxLayout(self.GamePageTabsFrame)
-        self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.ProfileTabButton = QRadioButton(self.GamePageTabsFrame)
         self.ProfileTabButton.setObjectName(u"ProfileTabButton")
         self.ProfileTabButton.setMinimumSize(QSize(0, 36))
@@ -181,6 +179,13 @@ class Ui_MainWindow(object):
         self.FilesTabButton.setMinimumSize(QSize(0, 36))
 
         self.verticalLayout_2.addWidget(self.FilesTabButton)
+
+        self.ModdingTabButton = QRadioButton(self.GamePageTabsFrame)
+        self.ModdingTabButton.setObjectName(u"ModdingTabButton")
+        self.ModdingTabButton.setMinimumSize(QSize(0, 36))
+        self.ModdingTabButton.setIconSize(QSize(32, 32))
+
+        self.verticalLayout_2.addWidget(self.ModdingTabButton)
 
         self.GameSettingsTabButton = QRadioButton(self.GamePageTabsFrame)
         self.GameSettingsTabButton.setObjectName(u"GameSettingsTabButton")
@@ -750,7 +755,7 @@ class Ui_MainWindow(object):
         self.scrollArea_4.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 326, 642))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 625, 702))
         self.verticalLayout_16 = QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_16.setObjectName(u"verticalLayout_16")
         self.verticalLayout_16.setContentsMargins(9, 9, 9, 9)
@@ -947,7 +952,7 @@ class Ui_MainWindow(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 659, 420))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 646, 411))
         self.scrollAreaWidgetContents_3.setStyleSheet(u"")
         self.verticalLayout_13 = QVBoxLayout(self.scrollAreaWidgetContents_3)
         self.verticalLayout_13.setSpacing(6)
@@ -1091,6 +1096,55 @@ class Ui_MainWindow(object):
         self.verticalLayout_9.addWidget(self.scrollArea_3)
 
         self.GameContentStackedWidget.addWidget(self.JoinGamePage)
+        self.ModdingPage = QWidget()
+        self.ModdingPage.setObjectName(u"ModdingPage")
+        self.verticalLayout_17 = QVBoxLayout(self.ModdingPage)
+        self.verticalLayout_17.setObjectName(u"verticalLayout_17")
+        self.ModsList = QListWidget(self.ModdingPage)
+        self.ModsList.setObjectName(u"ModsList")
+
+        self.verticalLayout_17.addWidget(self.ModsList)
+
+        self.horizontalLayout_19 = QHBoxLayout()
+        self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
+        self.horizontalSpacer_7 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_19.addItem(self.horizontalSpacer_7)
+
+        self.label_6 = QLabel(self.ModdingPage)
+        self.label_6.setObjectName(u"label_6")
+
+        self.horizontalLayout_19.addWidget(self.label_6)
+
+        self.ModTypeButton = QComboBox(self.ModdingPage)
+        self.ModTypeButton.addItem("")
+        self.ModTypeButton.addItem("")
+        self.ModTypeButton.addItem("")
+        self.ModTypeButton.addItem("")
+        self.ModTypeButton.addItem("")
+        self.ModTypeButton.setObjectName(u"ModTypeButton")
+
+        self.horizontalLayout_19.addWidget(self.ModTypeButton)
+
+        self.VisitPageButton = QPushButton(self.ModdingPage)
+        self.VisitPageButton.setObjectName(u"VisitPageButton")
+
+        self.horizontalLayout_19.addWidget(self.VisitPageButton)
+
+        self.RefreshModsButton = QPushButton(self.ModdingPage)
+        self.RefreshModsButton.setObjectName(u"RefreshModsButton")
+
+        self.horizontalLayout_19.addWidget(self.RefreshModsButton)
+
+        self.DownloadModButton = QPushButton(self.ModdingPage)
+        self.DownloadModButton.setObjectName(u"DownloadModButton")
+
+        self.horizontalLayout_19.addWidget(self.DownloadModButton)
+
+
+        self.verticalLayout_17.addLayout(self.horizontalLayout_19)
+
+        self.GameContentStackedWidget.addWidget(self.ModdingPage)
 
         self.verticalLayout_4.addWidget(self.GameContentStackedWidget)
 
@@ -1165,7 +1219,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 84, 70))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 87, 87))
         self.verticalLayout_19 = QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_19.setSpacing(0)
         self.verticalLayout_19.setObjectName(u"verticalLayout_19")
@@ -1193,7 +1247,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 261, 134))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 255, 130))
         self.verticalLayout_18 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_18.setObjectName(u"verticalLayout_18")
         self.label_4 = QLabel(self.scrollAreaWidgetContents)
@@ -1242,7 +1296,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.MainTabsStackedWidget.setCurrentIndex(1)
-        self.GameContentStackedWidget.setCurrentIndex(5)
+        self.GameContentStackedWidget.setCurrentIndex(6)
         self.PlayerSkinInput.setCurrentIndex(0)
         self.PlayerColorInput.setCurrentIndex(0)
         self.AdvanceMapInput.setCurrentIndex(1)
@@ -1273,6 +1327,7 @@ class Ui_MainWindow(object):
         self.NewsTitleLabel.setText(QCoreApplication.translate("MainWindow", u"SONIC ROBO BLAST 2 NEWS", None))
         self.ProfileTabButton.setText(QCoreApplication.translate("MainWindow", u"Profile", None))
         self.FilesTabButton.setText(QCoreApplication.translate("MainWindow", u"Files", None))
+        self.ModdingTabButton.setText(QCoreApplication.translate("MainWindow", u"Modding", None))
         self.GameSettingsTabButton.setText(QCoreApplication.translate("MainWindow", u"Game settings", None))
         self.PlayerSetupTabButton.setText(QCoreApplication.translate("MainWindow", u"Player setup", None))
         self.HostGameTabButton.setText(QCoreApplication.translate("MainWindow", u"Host game", None))
@@ -1487,6 +1542,16 @@ class Ui_MainWindow(object):
         self.EditServerButton.setText(QCoreApplication.translate("MainWindow", u"Edit", None))
         self.DeleteServerButton.setText(QCoreApplication.translate("MainWindow", u"Delete", None))
         self.SaveButton.setTabText(self.SaveButton.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Saved Servers", None))
+        self.label_6.setText(QCoreApplication.translate("MainWindow", u"Category:", None))
+        self.ModTypeButton.setItemText(0, QCoreApplication.translate("MainWindow", u"Maps", None))
+        self.ModTypeButton.setItemText(1, QCoreApplication.translate("MainWindow", u"Lua", None))
+        self.ModTypeButton.setItemText(2, QCoreApplication.translate("MainWindow", u"Characters", None))
+        self.ModTypeButton.setItemText(3, QCoreApplication.translate("MainWindow", u"Misc", None))
+        self.ModTypeButton.setItemText(4, QCoreApplication.translate("MainWindow", u"Assets", None))
+
+        self.VisitPageButton.setText(QCoreApplication.translate("MainWindow", u"Visit Page", None))
+        self.RefreshModsButton.setText(QCoreApplication.translate("MainWindow", u"Refresh", None))
+        self.DownloadModButton.setText(QCoreApplication.translate("MainWindow", u"Download", None))
         self.GameProfileComboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"Default", None))
         self.GameProfileComboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"New profile...", None))
 
