@@ -1,3 +1,4 @@
+import html
 import json
 import os
 import sys
@@ -79,7 +80,7 @@ class QueryMessageBoard(QtCore.QThread):
             if self.get_mod_description:
                 if self.mod:
                     description = self.mb_query.get_mod_description(self.mod)
-                    description = '\n'.join(description)
+                    print(description)
                     self.mod_description_sig1.emit(description)
 
                 # Reset variables
@@ -466,7 +467,8 @@ class MainWindow(QMainWindow):
         self.mod_list_sig.emit(self.ui.ModTypeCombo.currentText())
 
     def on_mod_description(self, description):
-        self.ui.ModBrowser.setText(description.strip())
+        description = description.rstrip('\r\n')
+        self.ui.ModBrowser.setText(description.rstrip())
 
     def on_mod_list(self, mod_list):
         self.ui.ModsList.clear()

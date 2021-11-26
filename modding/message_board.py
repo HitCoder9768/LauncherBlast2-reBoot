@@ -131,13 +131,27 @@ class MBQuery:
 
     def get_mod_page_html(self, mod: Mod):
         url = mod.url
-        print(url)
         response = requests.get(url,
                                 stream=True,
                                 headers=self.headers)
         response.raw.decode_content = True
         mod.html = html.parse(response.raw)
         return html.parse(response.raw)
+
+    def get_mod_page_html_str(self, mod: Mod):
+        def get_mod_page_html(self, mod: Mod):
+            url = mod.url
+            response = requests.get(url,
+                                    stream=True,
+                                    headers=self.headers)
+            response.raw.decode_content = True
+            return response.json()
+
+    def get_mod_description_html(self, mod: Mod):
+        if not mod.html:
+            self.get_mod_page_html(mod)
+        innerHTML = mod.html.xpath('//article[@class="resourceBody-main js-lbContainer"]/text()')
+        return innerHTML
 
     def get_mod_description(self, mod: Mod):
         if not mod.html:
