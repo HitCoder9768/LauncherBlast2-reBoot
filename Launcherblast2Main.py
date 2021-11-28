@@ -1,28 +1,20 @@
-import html
 import json
 import os
 import sys
 import urllib
 import urllib.parse
 from datetime import date
-import threading
-import queue
-import time
 from urllib.request import urlretrieve
-from urllib.parse import urlparse
 
 import feedparser
 from PySide6 import QtGui, QtCore, QtWidgets
 from PySide6.QtWidgets import QFileDialog, QMenu, QMessageBox
 from PySide6.QtCore import Signal
-from PySide6.QtWebEngineWidgets import QWebEngineView
 
 import EditServerMain
 import characterText
-import modding
-import server_query
-import modding.downloader
-from modding import MBQuery
+from LauncherThreading import QueryMessageBoard, QueryMasterServer
+from networking.mb_query import MBQuery
 from LauncherUI import *
 from qss import themes
 
@@ -30,69 +22,11 @@ fool = date.today() == date(date.today().year, 4, 1)
 
 versionString = "reBoot-2.0"
 
-class QueryMessageBoard(QtCore.QThread):
-    mod_description_sig1 = Signal(str)
-    mod_list_sig1 = Signal(dict)
-
-    def __init__(self, parent=None):
-        QtCore.QThread.__init__(self, parent)
-        self.mb_query = MBQuery()
-        self.mod = None
-        self.get_mod_description = False
-        self.get_mods = False
-        self.mods_type = None
-
-    def on_request_mod_list(self, mods_type):
-        self.get_mods = True
-        self.mods_type = mods_type
-
-    def on_request_mod_desc(self, mod):
-        self.get_mod_description = True
-        self.mod = mod
-
-    def run(self):
-        self.running = True
-        while self.running:
-            if self.get_mods:
-                self.mods_list = {}
-                subforum_url = None
-                if self.mods_type == "Maps":
-                    subforum_url = self.mb_query.maps_sublink
-                if self.mods_type == "Characters":
-                    subforum_url = self.mb_query.characters_sublink
-                if self.mods_type == "Lua":
-                    subforum_url = self.mb_query.lua_sublink
-                if self.mods_type == "Assets":
-                    subforum_url = self.mb_query.assets_sublink
-                if self.mods_type == "Misc":
-                    subforum_url = self.mb_query.misc_sublink
-                mods = self.mb_query.get_mods(subforum_url)
-                for mod in mods:
-                    entry_text = mod.name
-                    self.mods_list[entry_text] = mod
-
-                self.mod_list_sig1.emit(self.mods_list)
-
-                # Reset variables
-                self.mods_list = {}
-                self.get_mods = False
-                self.mods_type = None
-
-            if self.get_mod_description:
-                if self.mod:
-                    description = self.mb_query.get_mod_description(self.mod)
-                    self.mod_description_sig1.emit(description)
-
-                # Reset variables
-                self.mod = None
-                self.get_mod_description = False
-
-            time.sleep(1)
-
 
 class MainWindow(QMainWindow):
     mod_description_sig = Signal(object)
     mod_list_sig = Signal(dict)
+    query_ms_sig = Signal(bool)
 
     def __init__(self, app):
         super().__init__()
@@ -112,7 +46,10 @@ class MainWindow(QMainWindow):
 
         # Dict associate master server widget items with server data
         self.master_server_list = {}
-        self.load_ms_list()  # populates master server list when the program first runs
+        try:
+            self.load_ms_list()  # populates master server list when the program first runs
+        except:
+            pass
 
         # Dict associating mod list widget items with mods:
         self.mods_list = {}
@@ -127,7 +64,13 @@ class MainWindow(QMainWindow):
         self.mod_description_sig.connect(self.mb_qthread.on_request_mod_desc)
         self.mb_qthread.mod_list_sig1.connect(self.on_mod_list)
         self.mb_qthread.mod_description_sig1.connect(self.on_mod_description)
-
+        
+        # Master Server Multithreading
+        self.ms_qthread = QueryMasterServer()
+        self.ms_qthread.start()
+        self.query_ms_sig.connect(self.ms_qthread.on_refresh)
+        self.ms_qthread.server_list_sig1.connect(self.on_server_list)
+        
         # load servers from file ===================================================== #
         # self.loadServerList()
         self.has_loaded_servers = False
@@ -177,6 +120,9 @@ class MainWindow(QMainWindow):
         self.ui.HostGameTabButton.clicked.connect(lambda: self.change_game_tab(4))
         self.ui.JoinGameTabButton.clicked.connect(lambda: self.change_game_tab(5))
 
+        # profile page buttons ======================================================= #
+        self.ui.ProfilePathBrowseButton.clicked.connect(self.set_game_path)
+
         # files list buttons ========================================================= #
         self.ui.GameFilesClearButton.clicked.connect(self.clear_files_list)
         self.ui.GameFilesDeleteButton.clicked.connect(self.delete_selected_files)
@@ -198,7 +144,7 @@ class MainWindow(QMainWindow):
         self.ui.DeleteServerButton.clicked.connect(self.delete_selected_server)
         self.ui.EditServerButton.clicked.connect(self.open_server_editor)
         self.ui.JoinAddressButton.clicked.connect(self.join_from_ip)
-        self.ui.RefreshButton.clicked.connect(self.load_ms_list)
+        self.ui.RefreshButton.clicked.connect(self.query_ms)
         self.ui.JoinMasterServerButton.clicked.connect(self.join_ms_selection)
         self.ui.SaveMSButton.clicked.connect(self.save_ms_selection)
 
@@ -253,15 +199,11 @@ class MainWindow(QMainWindow):
             info_label.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
             self.ui.verticalLayout_20.addWidget(info_label)
 
-    # add server window ============================================================== #
-    # ================================================================================ #
     def show_add_server_dialog(self):
         self.childWindow = EditServerMain.ChildWindow(self, "", "", True)
         self.childWindow.show()
         return
 
-    # change character image for skin thing ========================================== #
-    # ================================================================================ #
     def change_skin_image(self):
         asset_img = ":/assets/img/sonic.png"
         self.ui.PlayerSkinInfoText.setText(characterText.sonic)
@@ -282,16 +224,15 @@ class MainWindow(QMainWindow):
             self.ui.PlayerSkinInfoText.setText(characterText.metal)
 
         self.ui.PlayerSkinImage.setPixmap(QtGui.QPixmap(asset_img).scaled(135,
-                                                                         190,
-                                                                         QtCore.Qt.KeepAspectRatio,
-                                                                         QtCore.Qt.FastTransformation))
+                                                                          190,
+                                                                          QtCore.Qt.KeepAspectRatio,
+                                                                          QtCore.Qt.FastTransformation))
         return
 
-    # create srb2 launch command ===================================================== #
-    # ================================================================================ #
-    # this converts all of the launcher inputs to a single-string command to launch    #
-    # srb2.                                                                            #
     def get_launch_command(self):
+        """
+        This converts all of the launcher inputs to a single-string command to launch SRB2
+        """
         ui = self.ui
         com = ""
         if self.ui.WineToggle.isChecked() and self.ui.WineToggle.isEnabled(): com += "wine "
@@ -309,7 +250,8 @@ class MainWindow(QMainWindow):
         if ui.GameMusicSetting.currentIndex() == 3: com += " -nomusic"
         if ui.GameSoundSetting.currentIndex() == 1: com += " -nosound"
         if ui.GameHorizontalResolutionInput.text() != "" and ui.GameVerticalResolutionInput.text() != "":
-            com += " -width " + ui.GameHorizontalResolutionInput.text() + " -height " + ui.GameVerticalResolutionInput.text()
+            com += " -width " + ui.GameHorizontalResolutionInput.text() + " -height " \
+                   + ui.GameVerticalResolutionInput.text()
         if ui.PlayerNameInput.text() != "": com += " +name \"" + ui.PlayerNameInput.text() + "\""
         if ui.PlayerColorInput.currentIndex() != 0: com += " +color " + str(ui.PlayerColorInput.currentText().lower())
         if ui.PlayerSkinInput.currentIndex() != 0: com += " +skin " + str(
@@ -328,21 +270,23 @@ class MainWindow(QMainWindow):
 
         return com
 
-    # clear files list =============================================================== #
-    # ================================================================================ #
+    def set_game_path(self):
+        f, _ = QFileDialog.getExistingDirectory()
+        if (f):
+            #self.PathGameFilesExecScriptInput.setText(f)
+            pass
+
+    #
+
     def clear_files_list(self):
         self.ui.GameFilesList.clear()
         return
 
-    # delete current file ============================================================ #
-    # ================================================================================ #
     def delete_selected_files(self):
         for item in self.ui.GameFilesList.selectedItems():
             self.ui.GameFilesList.takeItem(self.ui.GameFilesList.row(item))
         return
 
-    # move files up ================================================================== #
-    # ================================================================================ #
     def move_selected_files_up(self):
         for item in self.ui.GameFilesList.selectedItems():
             row = self.ui.GameFilesList.row(item)
@@ -352,8 +296,6 @@ class MainWindow(QMainWindow):
             c_item.setSelected(True)
         return
 
-    # move files down ================================================================ #
-    # ================================================================================ #
     def move_selected_files_down(self):
         reservedItems = []
         row = 0
@@ -367,24 +309,22 @@ class MainWindow(QMainWindow):
             item.setSelected(True)
         return
 
-    # add files to the file list ===================================================== #
-    # ================================================================================ #
     def add_file(self, f):
         new_item = QtWidgets.QListWidgetItem()
         new_item.setText(os.path.basename(str(f)))
         new_item_icon = QtGui.QIcon()
         filetype = str(f).split(".")[-1]
         new_item_icon.addPixmap(QtGui.QPixmap(":/assets/img/filetypes/" + filetype + ".png"), QtGui.QIcon.Normal,
-                              QtGui.QIcon.Off)
+                                QtGui.QIcon.Off)
         new_item.setIcon(new_item_icon)
         self.ui.GameFilesList.addItem(new_item)
         return
 
-    # add files button =============================================================== #
-    # ================================================================================ #
     def add_files(self):
         files, _ = QFileDialog.getOpenFileNames(self, "Open files to add to SRB2", "",
-                                                "All compatible SRB2 files (*.pk3 *.wad *.lua *.soc);;PK3 Files (*.pk3);;WAD Files (*.wad);;Lua Files (*.lua);;SOC files (*.soc)",
+                                                "All compatible SRB2 files (*.pk3 *.wad *.lua *.soc)"
+                                                ";;PK3 Files (*.pk3);;WAD Files (*.wad)"
+                                                ";;Lua Files (*.lua);;SOC files (*.soc)",
                                                 options=self.FileDialogOptions)
         if files:
             # add each file to the file list with icon =============================== #
@@ -417,6 +357,8 @@ class MainWindow(QMainWindow):
                     self.add_file(item)
         return
 
+    #
+
     def set_exec_file_path(self):
         f, _ = QFileDialog.getOpenFileName(self, "Open script to execute on launch", "",
                                            "All compatible files (*.txt *.cfg);;All files (*)",
@@ -424,24 +366,20 @@ class MainWindow(QMainWindow):
         if (f):
             self.ui.GameFilesExecScriptInput.setText(f)
 
-    # play button ==================================================================== #
-    # ================================================================================ #
     def launch_game_normally(self):
         launchCommand = self.get_launch_command()
         os.system(launchCommand)
         return
 
-    # change tab function ============================================================ #
-    # ================================================================================ #
     def change_main_tab(self, index):
         self.ui.MainTabsStackedWidget.setCurrentIndex(index)
         return
 
-    # change game tab function ======================================================= #
-    # ================================================================================ #
     def change_game_tab(self, index):
         self.ui.GameContentStackedWidget.setCurrentIndex(index)
         return
+
+    #
 
     def download_mod(self):
         selection = self.ui.ModsList.currentItem().text()
@@ -474,11 +412,16 @@ class MainWindow(QMainWindow):
         for item in self.mods_list:
             self.append_mod_to_list(item)
 
-    def load_ms_list(self):
-        ms_data = server_query.get_server_list(server_query.ms_url)
+    def query_ms(self):
+        self.ui.MasterServerList.clear()
+        print("query_ms")
+        self.query_ms_sig.emit(True)
+    
+    def on_server_list(self, server_list):
+        print("on_server_list")
         del self.master_server_list
         self.master_server_list = {}
-        for server in ms_data:
+        for server in server_list:
             entry_label = '{} | Room: {} | Version: {}'.format(
                 server.get("name"),
                 server.get("room"),
@@ -487,7 +430,6 @@ class MainWindow(QMainWindow):
             new_item.setText(entry_label)
             self.ui.MasterServerList.addItem(new_item)
             self.master_server_list[entry_label] = server
-        return
 
     def join_ms_selection(self):
         selection = self.ui.MasterServerList.currentItem().text()
@@ -502,8 +444,6 @@ class MainWindow(QMainWindow):
         name = server.get("name")
         self.add_server_to_list(name, ip)
 
-    # save servers list to file ====================================================== #
-    # ================================================================================ #
     def save_server_list(self):
         serv_list = []
         for i in range(len(self.saved_server_ips)):
@@ -513,8 +453,6 @@ class MainWindow(QMainWindow):
             json.dump(serv_list, f)
         return
 
-    # load server list =============================================================== #
-    # ================================================================================ #
     def load_server_list(self):
         serv_list = []
         fpath = os.path.join(os.getcwd(), "lb2ServerList.json")
@@ -527,8 +465,6 @@ class MainWindow(QMainWindow):
             self.add_server_to_list(server["name"], server["ip"])
         return
 
-    # add server to server list ====================================================== #
-    # ================================================================================ #
     def add_server_to_list(self, name, ip):
         new_item = QtWidgets.QListWidgetItem()
         new_item.setText(name)
@@ -537,8 +473,6 @@ class MainWindow(QMainWindow):
         self.save_server_list()
         return
 
-    # open server editor ============================================================= #
-    # ================================================================================ #
     def open_server_editor(self):
         ip = self.saved_server_ips[self.ui.ServerList.selectedIndexes()[0].row()]
         name = self.ui.ServerList.selectedItems()[0].text()
@@ -546,45 +480,39 @@ class MainWindow(QMainWindow):
         self.childWindow.show()
         return
 
-    # edit server in list ============================================================ #
-    # ================================================================================ #
     def edit_selected_server(self, name, ip):
         self.saved_server_ips[self.ui.ServerList.selectedIndexes()[0].row()] = ip
         self.ui.ServerList.selectedItems()[0].setText(name)
         self.save_server_list()
         return
 
-    # delete server in list ========================================================== #
-    # ================================================================================ #
     def delete_server_from_list(self, index):
         self.saved_server_ips.pop(index)
         self.ui.ServerList.takeItem(index)
         self.save_server_list()
         return
 
-    # delete selected server ========================================================= #
-    # ================================================================================ #
     def delete_selected_server(self):
         self.delete_server_from_list(self.ui.ServerList.selectedIndexes()[0].row())
         return
 
-    # join current selected server in list =========================================== #
-    # ================================================================================ #
     def join_selected_server(self):
+        """Join current selected server in list
+        """
         ipString = self.saved_server_ips[self.ui.ServerList.selectedIndexes()[0].row()]
         os.system(self.get_launch_command() + " -connect " + ipString)
         return
 
-    # join direct address ============================================================ #
-    # ================================================================================ #
     def join_from_ip(self):
+        """Join direct address
+        """
         ipString = self.ui.JoinAddressInput.text
         os.system(self.get_launch_command() + " -connect " + ipString)
         return
 
-    # join current selected server in list =========================================== #
-    # ================================================================================ #
     def start_server(self):
+        """Join current selected server in list
+        """
         launch_command = self.ui.GameExecFilePathInput.text() + " -server"
         if not self.ui.DedicatedServerToggle.isChecked:
             launch_command = self.get_launch_command()
@@ -612,7 +540,8 @@ class MainWindow(QMainWindow):
         else:
             launch_command += " +maxplayers 8"
         if (
-                self.ui.ForceSkinInput.currentText() != ""): launch_command += " +forceskin " + self.ui.ForceSkinInput.currentText().lower().replace(
+                self.ui.ForceSkinInput.currentText() != ""):
+            launch_command += " +forceskin " + self.ui.ForceSkinInput.currentText().lower().replace(
             " ", "")
         if self.ui.PortInput.text() != "":
             launch_command += " -port " + self.ui.PortInput.text()
@@ -635,15 +564,15 @@ class MainWindow(QMainWindow):
         os.system(launch_command)
         return
 
-    # when closed save stuff ========================================================= #
-    # ================================================================================ #
+    #
+
     def closeEvent(self, e):
         self.save_config()
         return
 
-    # wait for window the fully start ================================================ #
-    # ================================================================================ #
     def applicationStarted(self):
+        """Wait for window to fully start
+        """
         # fix resolution of the image on the play tab ================================ #
         self.load_server_list()
         self.load_config()
@@ -658,8 +587,6 @@ class MainWindow(QMainWindow):
 
         return
 
-    # save launcher config =========================================================== #
-    # ================================================================================ #
     def save_config(self):
         # generate the json data for the config
         confJson = {"files": [], "player": {}, "game": {"resolution": {}}, "host": {}, "settings": {}}
@@ -699,9 +626,9 @@ class MainWindow(QMainWindow):
         print("saved config")
         return
 
-    # read launcher config json file ================================================= #
-    # ================================================================================ #
     def read_config(self):
+        """Read launcher config json file
+        """
         config_data = {}
         fpath = os.path.join(os.getcwd(), "LauncherBlast2Conf.json")
         # print(fpath)
@@ -712,8 +639,6 @@ class MainWindow(QMainWindow):
 
         return config_data
 
-    # load launcher config =========================================================== #
-    # ================================================================================ #
     def load_config(self):
 
         if self.configData == 0:
@@ -754,8 +679,6 @@ class MainWindow(QMainWindow):
         self.change_skin_image()
         return
 
-    # apply launchder style ========================================================== #
-    # ================================================================================ #
     def apply_style(self):
         # set up the launcher theme
         if (self.configData == 0):
@@ -777,8 +700,6 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(themes.main + chosentheme)
         return
 
-    # apply launchder style ========================================================== #
-    # ================================================================================ #
     def export_script(self):
         file_filter = "Batch files (*.bat);;Shell scripts (*.sh)"
         if (os.name == "posix"):

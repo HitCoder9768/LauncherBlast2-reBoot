@@ -3,69 +3,7 @@ from dataclasses import dataclass
 import struct
 import socket
 import html
-from collections import namedtuple
-import requests
-import urllib.parse
-
-ms_kart_url = "https://ms.kartkrew.org/ms/api/games/SRB2Kart/7/servers?v=2"
-ms_url = "https://mb.srb2.org/MS/0/servers"
-headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) '
-                         'Chrome/39.0.2171.95 Safari/537.36'}
-
-
-def parse_server_line(server_string, room):
-    server_data = server_string.split(" ")
-    ip = server_data[0]
-    port = server_data[1]
-    name = urllib.parse.unquote(server_data[2]).encode('ascii', errors='ignore').decode()
-    version = server_data[3]
-    server = {"ip": ip,
-              "port": port,
-              "name": name,
-              "version": version,
-              "room": room}
-    return server
-
-
-def get_server_list(url):
-    # first get a list of all servers from the master server
-    try:
-        ms_data = requests.get(url, headers=headers)
-    except:
-        print("Could not get master server data. Not updating server information.")
-        return
-
-    server_list = []
-
-    if "\n33\n" in ms_data.text:
-        ms_standard_data = ms_data.text.split("\n33\n")[1].split("\n\n")[0].split("\n")
-        ms_standard_data = filter(None, ms_standard_data)
-        for server_line in ms_standard_data:
-            server = parse_server_line(server_line, "standard")
-            server_list.append(server)
-
-    if "\n28\n" in ms_data.text:
-        ms_casual_data = ms_data.text.split("\n28\n")[1].split("\n\n")[0].split("\n")
-        ms_casual_data = filter(None, ms_casual_data)
-        for server_line in ms_casual_data:
-            server = parse_server_line(server_line, "casual")
-            server_list.append(server)
-
-    if "\n31\n" in ms_data.text:
-        ms_oldc_data = ms_data.text.split("\n31\n")[1].split("\n\n")[0].split("\n")
-        ms_oldc_data = filter(None, ms_oldc_data)
-        for server_line in ms_oldc_data:
-            server = parse_server_line(server_line, "oldc")
-            server_list.append(server)
-
-    if "\n38\n" in ms_data.text:
-        ms_custom_data = ms_data.text.split("\n38\n")[1].split("\n\n")[0].split("\n")
-        ms_custom_data = filter(None, ms_custom_data)
-        for server_line in ms_custom_data:
-            server = parse_server_line(server_line, "custom")
-            server_list.append(server)
-
-    return server_list
+from collections import namedtuple36
 
 
 def get_map_title(title, iszone, actnum):
@@ -205,6 +143,36 @@ class Packet:
         unpacked = t._asdict(t._make(struct.unpack(format, pkt[:header_length])))
         self._add_to_dict(unpacked)
         return pkt[header_length:]
+    
+def colorize_server_name(server_name):
+    colors = [
+        'inherit',
+        '#df00df',
+        '#ffff0f',
+        '#69e046',
+        '#7373ff',
+        '#ff3f3f',
+        '#a7a7a7',
+        '#ff9736',
+        '#55c8ff',
+        '#cf7fcf',
+        '#d7bb43',
+        '#c7e494',
+        '#c4c4e1',
+        '#f3a3a3',
+        '#bf7b4b',
+        '#ffc7a7',
+    ]
+    codes = ["\\x80", "\\x81", "\\x82", "\\x83", "\\x84", "\\x85", "\\x86", "\\x87", "\\x88", "\\x89", "\\x8a",
+             "\\x8b", "\\x8c", "\\x8d", "\\x8e", "\\x8f", ]
+    server_name = html.escape(server_name)
+    for i in range(0x10):
+        server_name = server_name.replace(codes[i],
+                                          '</span><span style="color:' + colors[i] + ';">')
+    server_name = '<span style="color:' + colors[0] + '">' + server_name + '</span>'
+
+    return server_name
+
 
 
 class ServerInfoPacket(Packet):
@@ -296,33 +264,3 @@ class SRB2Query:
         serverinfo = ServerInfoPacket(self.recv())
         playerinfo = PlayerInfoPacket(self.recv())
         return serverinfo, playerinfo
-
-
-def colorize_server_name(server_name):
-    colors = [
-        'inherit',
-        '#df00df',
-        '#ffff0f',
-        '#69e046',
-        '#7373ff',
-        '#ff3f3f',
-        '#a7a7a7',
-        '#ff9736',
-        '#55c8ff',
-        '#cf7fcf',
-        '#d7bb43',
-        '#c7e494',
-        '#c4c4e1',
-        '#f3a3a3',
-        '#bf7b4b',
-        '#ffc7a7',
-    ]
-    codes = ["\\x80", "\\x81", "\\x82", "\\x83", "\\x84", "\\x85", "\\x86", "\\x87", "\\x88", "\\x89", "\\x8a",
-             "\\x8b", "\\x8c", "\\x8d", "\\x8e", "\\x8f", ]
-    server_name = html.escape(server_name)
-    for i in range(0x10):
-        server_name = server_name.replace(codes[i],
-                                          '</span><span style="color:' + colors[i] + ';">')
-    server_name = '<span style="color:' + colors[0] + '">' + server_name + '</span>'
-
-    return server_name
