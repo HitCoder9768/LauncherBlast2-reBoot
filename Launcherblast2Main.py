@@ -46,10 +46,6 @@ class MainWindow(QMainWindow):
 
         # Dict associate master server widget items with server data
         self.master_server_list = {}
-        try:
-            self.load_ms_list()  # populates master server list when the program first runs
-        except:
-            pass
 
         # Dict associating mod list widget items with mods:
         self.mods_list = {}
@@ -70,6 +66,11 @@ class MainWindow(QMainWindow):
         self.ms_qthread.start()
         self.query_ms_sig.connect(self.ms_qthread.on_refresh)
         self.ms_qthread.server_list_sig1.connect(self.on_server_list)
+
+        try:
+            self.query_ms()  # populates master server list when the program first runs
+        except:
+            pass
         
         # load servers from file ===================================================== #
         # self.loadServerList()
