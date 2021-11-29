@@ -1,7 +1,0 @@
-* Feature list
-** Button and dialog window to see detailed info on individual SRB2 servers.
-** Download mods
-** Download SRB2 updates
-** Profiles
-* Bug list
-

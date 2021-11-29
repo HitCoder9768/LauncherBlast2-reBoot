@@ -1,0 +1,12 @@
+* Feature list
+** Button and dialog window to see detailed info on individual SRB2 servers.
+** Download mods
+** Download SRB2 updates
+** Profiles
+* Bug list
+** ModBrowser QWebEngineView() is white, and that doesn't match the theme
+** Button next to "Play" Button has inconsistently rendered icon
+* Tasks
+** Add myself to about page credits
+* Refactoring
+** Maybe launch command should be built using an array instead of a long string?
