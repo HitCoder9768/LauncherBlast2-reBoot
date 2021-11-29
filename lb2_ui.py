@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'launcher.ui'
+## Form generated from reading UI file 'lb2.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.2.1
 ##
@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComb
     QScrollArea, QSizePolicy, QSpacerItem, QSplitter,
     QStackedWidget, QTabWidget, QTextEdit, QVBoxLayout,
     QWidget)
-import launcherblast2_rc
+import lb2_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):

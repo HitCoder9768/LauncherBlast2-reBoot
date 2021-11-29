@@ -13,10 +13,10 @@ from PySide6 import QtGui, QtCore, QtWidgets
 from PySide6.QtWidgets import QFileDialog, QMenu, QMessageBox
 from PySide6.QtCore import Signal
 
-import EditServerMain
-import characterText
-from LauncherThreading import QueryMessageBoard, QueryMasterServer
-from LauncherUI import *
+import edit_server_main
+import char_text
+from lb2_threading import QueryMessageBoard, QueryMasterServer
+from lb2_ui import *
 from qss import themes
 
 fool = date.today() == date(date.today().year, 4, 1)
@@ -208,28 +208,28 @@ class MainWindow(QMainWindow):
             self.ui.verticalLayout_20.addWidget(info_label)
 
     def show_add_server_dialog(self):
-        self.childWindow = EditServerMain.ChildWindow(self, "", "", True)
+        self.childWindow = edit_server_main.ChildWindow(self, "", "", True)
         self.childWindow.show()
         return
 
     def change_skin_image(self):
         asset_img = ":/assets/img/sonic.png"
-        self.ui.PlayerSkinInfoText.setText(characterText.sonic)
+        self.ui.PlayerSkinInfoText.setText(char_text.sonic)
         if self.ui.PlayerSkinInput.currentIndex() == 2:
             asset_img = ":/assets/img/tails.png"
-            self.ui.PlayerSkinInfoText.setText(characterText.tails)
+            self.ui.PlayerSkinInfoText.setText(char_text.tails)
         if self.ui.PlayerSkinInput.currentIndex() == 3:
             asset_img = ":/assets/img/knuckles.png"
-            self.ui.PlayerSkinInfoText.setText(characterText.knux)
+            self.ui.PlayerSkinInfoText.setText(char_text.knux)
         if self.ui.PlayerSkinInput.currentIndex() == 4:
             asset_img = ":/assets/img/rosy.png"
-            self.ui.PlayerSkinInfoText.setText(characterText.amy)
+            self.ui.PlayerSkinInfoText.setText(char_text.amy)
         if self.ui.PlayerSkinInput.currentIndex() == 5:
             asset_img = ":/assets/img/fang.png"
-            self.ui.PlayerSkinInfoText.setText(characterText.fang)
+            self.ui.PlayerSkinInfoText.setText(char_text.fang)
         if self.ui.PlayerSkinInput.currentIndex() == 6:
             asset_img = ":/assets/img/metal.png"
-            self.ui.PlayerSkinInfoText.setText(characterText.metal)
+            self.ui.PlayerSkinInfoText.setText(char_text.metal)
 
         self.ui.PlayerSkinImage.setPixmap(
             QtGui.QPixmap(asset_img).scaled(135,
@@ -520,7 +520,7 @@ class MainWindow(QMainWindow):
     def open_server_editor(self):
         ip = self.saved_server_ips[self.ui.ServerList.selectedIndexes()[0].row()]
         name = self.ui.ServerList.selectedItems()[0].text()
-        self.childWindow = EditServerMain.ChildWindow(self, name, ip, False)
+        self.childWindow = edit_server_main.ChildWindow(self, name, ip, False)
         self.childWindow.show()
         return
 

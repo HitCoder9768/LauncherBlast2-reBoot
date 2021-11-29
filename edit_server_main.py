@@ -1,7 +1,7 @@
 import fix_qt_import_error
 import sys, os, PySide6.QtWidgets, json, feedparser
 from PySide6.QtWidgets import QMainWindow, QApplication, QFileDialog
-from EditServerUI import *
+from edit_server_ui import *
 
 class ChildWindow(QMainWindow):
     def __init__(self, parentWindow, name, ip, createnew):

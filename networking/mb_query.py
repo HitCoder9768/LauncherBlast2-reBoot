@@ -52,7 +52,7 @@ class Mod:
 def get_mods(addons_subforum_url):
     """
     Gets a list of all mods from addons subforum URL
-    :param url: The URL of the SRB2 MB sub-forum to search
+    :param download_url: The URL of the SRB2 MB sub-forum to search
     :return: Returns a list containing Mod class instances
     """
     last_page = False
@@ -88,9 +88,9 @@ def get_addons_page_html(url, page_num):
     """
     SRB2 MB is broken up into subforums that sometimes have multiple pages.
     This function returns the html tree for a specified page.
-    :param url: The base url for the subforum, not including the specific page.
+    :param url: The base download_url for the subforum, not including the specific page.
     :param page_num: The page number as an integer
-    :return: HTML tree: the results of html.parse(requests.get(url))
+    :return: HTML tree: the results of html.parse(requests.get(download_url))
     """
     response = requests.get(url + "?page={}".format(str(page_num)),
                             stream=True,
@@ -120,7 +120,15 @@ def get_list_of_thread_names(parsed_html):
 def get_list_of_thread_links(parsed_html):
     return parsed_html.xpath('.//div[@class="structItem-title"]/*[@data-tp-primary="on"]/@href')
 
-def download_mod(url, path):
-    print("download_mod")
-    filepath = None
-    return filepath
+def download_file(download_url):
+    local_filename = download_url.split('/')[-1]
+    # NOTE the stream=True parameter below
+    with requests.get(download_url, stream=True) as r:
+        r.raise_for_status()
+        with open(local_filename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                # If you have chunk encoded response uncomment if
+                # and set chunk_size parameter to None.
+                #if chunk:
+                f.write(chunk)
+    return local_filename
