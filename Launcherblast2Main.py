@@ -668,10 +668,19 @@ class MainWindow(QMainWindow):
             self.global_settings["current_profile"])
     
     def default_profile_exists(self):
-        pass
+        if self.global_settings == None:
+            return False
+        else:
+            if not self.config_file_exists(self.get_current_profile_file()):
+                return False
+            else:
+                return True
     
     def global_settings_exist(self):
-        pass
+        if not self.config_file_exists(global_settings_file):
+            return False
+        else:
+            return True
     
     def config_file_exists(self, config_file):
         fpath = os.path.join(os.getcwd(), config_file)
@@ -682,10 +691,15 @@ class MainWindow(QMainWindow):
             return True
     
     def is_first_run(self):
-        if not self.config_file_exists(global_settings_file):
-            True
+        if not self.global_settings_exist():
+            return True
+        elif not self.default_profile_exists():
+            return True
+        else:
+            return False
     
     def find_profile_files(self):
+        # TODO - find all files in launcher directory ending in 'profile.toml'
         pass
     
     def save_global_settings_file(self):
