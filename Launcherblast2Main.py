@@ -4,6 +4,7 @@ import sys
 import webbrowser
 import urllib
 import urllib.parse
+import toml
 from datetime import date
 from urllib.request import urlretrieve
 
@@ -21,6 +22,7 @@ from qss import themes
 fool = date.today() == date(date.today().year, 4, 1)
 
 versionString = "reBoot-2.0"
+global_settings_file = "LauncherBlast2_settings.toml"
 
 
 class MainWindow(QMainWindow):
@@ -38,9 +40,13 @@ class MainWindow(QMainWindow):
 
     def __init__(self, app):
         super().__init__()
-
-        self.configData = self.read_config()
-
+        
+        # Launcher settings and profile variables
+        self.global_settings = None
+        self.current_profile = None
+        self.current_profile_file = None
+        self.current_profile_settings = None
+        
         self.apply_style()
 
         self.ui = Ui_MainWindow()
@@ -71,18 +77,10 @@ class MainWindow(QMainWindow):
         self.ms_qthread.start()
         self.query_ms_sig.connect(self.ms_qthread.on_refresh)
         self.ms_qthread.server_list_sig1.connect(self.on_server_list)
-
-        try:
-            self.query_ms()  # populates master server list when the program first runs
-        except:
-            print("Querying master server failed.")
         
         # load servers from file ===================================================== #
         # self.loadServerList()
         self.has_loaded_servers = False
-
-        # launcher config settings =========================#
-        self.launcherConfigFile = "LauncherBlast2Conf.json"
 
         # allow posix systems to use wine ============================================ #
         if os.name == "posix":
@@ -293,7 +291,7 @@ class MainWindow(QMainWindow):
             #self.PathGameFilesExecScriptInput.setText(f)
             pass
 
-    #
+    # Files tab
 
     def clear_files_list(self):
         self.ui.GameFilesList.clear()
@@ -396,7 +394,7 @@ class MainWindow(QMainWindow):
         self.ui.GameContentStackedWidget.setCurrentIndex(index)
         return
 
-    #
+    # Mods browser
     
     def open_mod_page(self):
         mod = self.get_selected_mod()
@@ -451,6 +449,8 @@ class MainWindow(QMainWindow):
         for item in self.mods_list:
             self.append_mod_to_list(item)
 
+    # Master server browser
+
     def query_ms(self):
         self.ui.MSStatusLabel.setText("Downloading servers list...")
         self.ui.MasterServerList.clear()
@@ -485,6 +485,8 @@ class MainWindow(QMainWindow):
         ip = server.get("ip")
         name = server.get("name")
         self.add_server_to_list(name, ip)
+
+    # Saved servers
 
     def save_server_list(self):
         serv_list = []
@@ -609,16 +611,25 @@ class MainWindow(QMainWindow):
     #
 
     def closeEvent(self, e):
-        self.save_config()
+        self.save_all()
         return
+    
+    def save_all(self):
+        self.save_global_settings_file()
+        self.save_profile_file(self.get_current_profile_file())
 
     def applicationStarted(self):
         """Wait for window to fully start
         """
         # fix resolution of the image on the play tab ================================ #
         self.load_server_list()
-        self.load_config()
+        self.load_global_settings()
+        self.load_current_profile()
         self.check_version()
+        try:
+            self.query_ms()  # populates master server list
+        except:
+            print("Querying master server failed.")
 
         # april fools day stuff
         if (fool):
@@ -629,117 +640,179 @@ class MainWindow(QMainWindow):
 
         return
 
-    def save_config(self):
-        # generate the json data for the config
-        confJson = {"files": [], "player": {}, "game": {"resolution": {}}, "host": {}, "settings": {}}
-        confJson["player"]["name"] = self.ui.PlayerNameInput.text()
-        confJson["player"]["skin"] = str(self.ui.PlayerSkinInput.currentText())
-        confJson["player"]["color"] = self.ui.PlayerColorInput.currentIndex()
-        confJson["game"]["resolution"]["width"] = self.ui.GameHorizontalResolutionInput.text()
-        confJson["game"]["resolution"]["height"] = self.ui.GameVerticalResolutionInput.text()
-        confJson["game"]["renderer"] = self.ui.GameRendererSetting.currentIndex()
-        confJson["game"]["windowmode"] = self.ui.GameFullscreenSetting.currentIndex()
-        confJson["game"]["music"] = self.ui.GameMusicSetting.currentIndex()
-        confJson["game"]["sound"] = self.ui.GameSoundSetting.currentIndex()
-        confJson["game"]["exepath"] = self.ui.GameExecFilePathInput.text()
-        confJson["game"]["cliargs"] = self.ui.GameArgsInput.text()
-        confJson["host"]["hostname"] = self.ui.ServerNameInput.text()
-        confJson["host"]["password"] = self.ui.AdminPasswordInput.text()
-        confJson["host"]["room"] = self.ui.RoomInput.currentIndex()
-        confJson["host"]["gametype"] = self.ui.GametypeInput.currentIndex()
-        confJson["host"]["advancemap"] = self.ui.AdvanceMapInput.currentIndex()
-        confJson["host"]["pointlimit"] = self.ui.PointLimitInput.text()
-        confJson["host"]["timelimit"] = self.ui.TimeLimitInput.text()
-        confJson["host"]["maxplayers"] = self.ui.MaxPlayersInput.text()
-        confJson["host"]["forceskin"] = str(self.ui.ForceSkinInput.currentText())
-        confJson["host"]["disableweaponrings"] = self.ui.DisableWeaponsToggle.isChecked()
-        confJson["host"]["suddendeath"] = self.ui.SuddenDeathToggle.isChecked()
-        confJson["host"]["dedicated"] = self.ui.DedicatedServerToggle.isChecked()
-        confJson["settings"]["wine"] = self.ui.WineToggle.isChecked()
-        confJson["settings"]["theme"] = self.ui.LauncherThemeInput.currentIndex()
-        confJson["settings"]["includefiles"] = self.ui.SaveFilesToConfigToggle.isChecked()
-
-        for i in range(self.ui.GameFilesList.count()):
-            confJson["files"].append(self.ui.GameFilesList.item(i).text())
-
-        with open("LauncherBlast2Conf.json", "w") as f:
-            json.dump(confJson, f)
-
-        print("saved config")
-        return
-
-    def read_config(self):
-        """Read launcher config json file
+    def read_config_file(self, toml_file=global_settings_file):
+        """This loads the global settings file, which is different from profiles
         """
         config_data = {}
-        fpath = os.path.join(os.getcwd(), "LauncherBlast2Conf.json")
-        # print(fpath)
-        if not os.path.isfile(fpath):
-            return 0
-        with open(fpath, "r") as f:
-            config_data = json.load(f)
+        
+        if not self.config_file_exists(toml_file):
+            return None 
+        
+        config_data = toml.load(toml_file)
 
         return config_data
 
-    def load_config(self):
+    def load_global_settings(self):
+        if self.is_first_run:
+            self.create_settings_on_first_run()
+        
+        toml_settings = self.read_config_file(global_settings_file)
+        self.global_settings = toml_settings
+        self.current_profile_settings = self.read_config_file(
+            self.get_current_profile_file())
+        
+        return
+    
+    def get_current_profile_file(self):
+        return self.global_settings["profiles"].get(
+            self.global_settings["current_profile"])
+    
+    def default_profile_exists(self):
+        pass
+    
+    def global_settings_exist(self):
+        pass
+    
+    def config_file_exists(self, config_file):
+        fpath = os.path.join(os.getcwd(), config_file)
+        #fpath = config_file
+        if not os.path.isfile(fpath):
+            return False
+        else:
+            return True
+    
+    def is_first_run(self):
+        if not self.config_file_exists(global_settings_file):
+            True
+    
+    def find_profile_files(self):
+        pass
+    
+    def save_global_settings_file(self):
+        """This saves the global settings, which is different from profiles
+        """        
+        with open(global_settings_file, "w") as f:
+            new_toml_string = toml.dump(self.global_settings, f)
+        print("saved config")
+        return
+    
+    def create_settings_on_first_run(self):
+        self.global_settings = {"current_profile": "Default",
+                                "profiles": 
+                                    {"Default": "default_profile.toml"}}
+        self.save_global_settings_file()
+        self.save_profile_file(self.get_current_profile_file())
+    
+    def load_current_profile(self):
+        self.current_profile_settings = self.read_config_file(
+            self.get_current_profile_file())
+        self.apply_profile_settings_to_gui(self.current_profile_settings)
+        
+    def get_profile_dict_from_file(self, profile_filename):
+        return self.read_config_file(profile_filename)
 
-        if self.configData == 0:
-            return
-
+    def apply_profile_settings_to_gui(self, profile_settings_dict):
         # now set all elements to their saved values
-        self.ui.PlayerNameInput.setText(self.configData["player"]["name"])
-        self.ui.PlayerSkinInput.setCurrentText(self.configData["player"]["skin"])
-        self.ui.PlayerColorInput.setCurrentIndex(self.configData["player"]["color"])
-        self.ui.GameHorizontalResolutionInput.setText(self.configData["game"]["resolution"]["width"])
-        self.ui.GameVerticalResolutionInput.setText(self.configData["game"]["resolution"]["height"])
-        self.ui.GameRendererSetting.setCurrentIndex(self.configData["game"]["renderer"])
-        self.ui.GameFullscreenSetting.setCurrentIndex(self.configData["game"]["windowmode"])
-        self.ui.GameMusicSetting.setCurrentIndex(self.configData["game"]["music"])
-        self.ui.GameSoundSetting.setCurrentIndex(self.configData["game"]["sound"])
-        self.ui.GameExecFilePathInput.setText(self.configData["game"]["exepath"])
-        self.ui.GameArgsInput.setText(self.configData["game"]["cliargs"])
-        self.ui.ServerNameInput.setText(self.configData["host"]["hostname"])
-        self.ui.AdminPasswordInput.setText(self.configData["host"]["password"])
-        self.ui.RoomInput.setCurrentIndex(self.configData["host"]["room"])
-        self.ui.GametypeInput.setCurrentIndex(self.configData["host"]["gametype"])
-        self.ui.AdvanceMapInput.setCurrentIndex(self.configData["host"]["advancemap"])
-        self.ui.PointLimitInput.setText(self.configData["host"]["pointlimit"])
-        self.ui.TimeLimitInput.setText(self.configData["host"]["timelimit"])
-        self.ui.MaxPlayersInput.setText(self.configData["host"]["maxplayers"])
-        self.ui.ForceSkinInput.setCurrentText(self.configData["host"]["forceskin"])
-        self.ui.DisableWeaponsToggle.setChecked(self.configData["host"]["disableweaponrings"])
-        self.ui.SuddenDeathToggle.setChecked(self.configData["host"]["suddendeath"])
-        self.ui.DedicatedServerToggle.setChecked(self.configData["host"]["dedicated"])
-        self.ui.WineToggle.setChecked(self.configData["settings"]["wine"])
-        self.ui.LauncherThemeInput.setCurrentIndex(self.configData["settings"]["theme"])
-        self.ui.SaveFilesToConfigToggle.setChecked(self.configData["settings"]["includefiles"])
+        self.ui.PlayerNameInput.setText(profile_settings_dict["player"]["name"])
+        self.ui.PlayerSkinInput.setCurrentText(profile_settings_dict["player"]["skin"])
+        self.ui.PlayerColorInput.setCurrentIndex(profile_settings_dict["player"]["color"])
+        self.ui.GameHorizontalResolutionInput.setText(profile_settings_dict["game"]["resolution"]["width"])
+        self.ui.GameVerticalResolutionInput.setText(profile_settings_dict["game"]["resolution"]["height"])
+        self.ui.GameRendererSetting.setCurrentIndex(profile_settings_dict["game"]["renderer"])
+        self.ui.GameFullscreenSetting.setCurrentIndex(profile_settings_dict["game"]["windowmode"])
+        self.ui.GameMusicSetting.setCurrentIndex(profile_settings_dict["game"]["music"])
+        self.ui.GameSoundSetting.setCurrentIndex(profile_settings_dict["game"]["sound"])
+        self.ui.GameExecFilePathInput.setText(profile_settings_dict["game"]["exepath"])
+        self.ui.GameArgsInput.setText(profile_settings_dict["game"]["cliargs"])
+        self.ui.ServerNameInput.setText(profile_settings_dict["host"]["hostname"])
+        self.ui.AdminPasswordInput.setText(profile_settings_dict["host"]["password"])
+        self.ui.RoomInput.setCurrentIndex(profile_settings_dict["host"]["room"])
+        self.ui.GametypeInput.setCurrentIndex(profile_settings_dict["host"]["gametype"])
+        self.ui.AdvanceMapInput.setCurrentIndex(profile_settings_dict["host"]["advancemap"])
+        self.ui.PointLimitInput.setText(profile_settings_dict["host"]["pointlimit"])
+        self.ui.TimeLimitInput.setText(profile_settings_dict["host"]["timelimit"])
+        self.ui.MaxPlayersInput.setText(profile_settings_dict["host"]["maxplayers"])
+        self.ui.ForceSkinInput.setCurrentText(profile_settings_dict["host"]["forceskin"])
+        self.ui.DisableWeaponsToggle.setChecked(profile_settings_dict["host"]["disableweaponrings"])
+        self.ui.SuddenDeathToggle.setChecked(profile_settings_dict["host"]["suddendeath"])
+        self.ui.DedicatedServerToggle.setChecked(profile_settings_dict["host"]["dedicated"])
+        self.ui.WineToggle.setChecked(profile_settings_dict["settings"]["wine"])
+        self.ui.LauncherThemeInput.setCurrentIndex(profile_settings_dict["settings"]["theme"])
+        self.ui.SaveFilesToConfigToggle.setChecked(profile_settings_dict["settings"]["includefiles"])
 
         if self.ui.SaveFilesToConfigToggle.isChecked:
-            for f in self.configData["files"]:
+            for f in profile_settings_dict["files"]:
                 self.add_file(f)
 
         self.change_skin_image()
+    
+    def generate_profile_dict(self):
+        toml_settings = {"files": [], "player": {}, "game": {"resolution": {}}, "host": {}, "settings": {}}
+        toml_settings["player"]["name"] = self.ui.PlayerNameInput.text()
+        toml_settings["player"]["skin"] = str(self.ui.PlayerSkinInput.currentText())
+        toml_settings["player"]["color"] = self.ui.PlayerColorInput.currentIndex()
+        toml_settings["game"]["resolution"]["width"] = self.ui.GameHorizontalResolutionInput.text()
+        toml_settings["game"]["resolution"]["height"] = self.ui.GameVerticalResolutionInput.text()
+        toml_settings["game"]["renderer"] = self.ui.GameRendererSetting.currentIndex()
+        toml_settings["game"]["windowmode"] = self.ui.GameFullscreenSetting.currentIndex()
+        toml_settings["game"]["music"] = self.ui.GameMusicSetting.currentIndex()
+        toml_settings["game"]["sound"] = self.ui.GameSoundSetting.currentIndex()
+        toml_settings["game"]["exepath"] = self.ui.GameExecFilePathInput.text()
+        toml_settings["game"]["cliargs"] = self.ui.GameArgsInput.text()
+        toml_settings["host"]["hostname"] = self.ui.ServerNameInput.text()
+        toml_settings["host"]["password"] = self.ui.AdminPasswordInput.text()
+        toml_settings["host"]["room"] = self.ui.RoomInput.currentIndex()
+        toml_settings["host"]["gametype"] = self.ui.GametypeInput.currentIndex()
+        toml_settings["host"]["advancemap"] = self.ui.AdvanceMapInput.currentIndex()
+        toml_settings["host"]["pointlimit"] = self.ui.PointLimitInput.text()
+        toml_settings["host"]["timelimit"] = self.ui.TimeLimitInput.text()
+        toml_settings["host"]["maxplayers"] = self.ui.MaxPlayersInput.text()
+        toml_settings["host"]["forceskin"] = str(self.ui.ForceSkinInput.currentText())
+        toml_settings["host"]["disableweaponrings"] = self.ui.DisableWeaponsToggle.isChecked()
+        toml_settings["host"]["suddendeath"] = self.ui.SuddenDeathToggle.isChecked()
+        toml_settings["host"]["dedicated"] = self.ui.DedicatedServerToggle.isChecked()
+        toml_settings["settings"]["wine"] = self.ui.WineToggle.isChecked()
+        toml_settings["settings"]["theme"] = self.ui.LauncherThemeInput.currentIndex()
+        toml_settings["settings"]["includefiles"] = self.ui.SaveFilesToConfigToggle.isChecked()
+
+        for i in range(self.ui.GameFilesList.count()):
+            toml_settings["files"].append(self.ui.GameFilesList.item(i).text())
+        
+        return toml_settings
+        pass
+    
+    def save_profile_file(self, filename):
+        """This saves the global settings, which is different from profiles
+        """
+        # generate the json data for the config
+        
+        toml_settings = self.generate_profile_dict()
+        
+        with open(filename, "w") as f:
+            new_toml_string = toml.dump(toml_settings, f)
+
+        print("saved profile file")
         return
 
     def apply_style(self):
         # set up the launcher theme
-        if (self.configData == 0):
+        if not self.current_profile_settings:
             self.setStyleSheet(themes.main + themes.dark)
             return
 
-        if self.configData["settings"]["theme"] == 0: 
+        if self.current_profile_settings["settings"]["theme"] == 0: 
             chosentheme = themes.dark
-        if self.configData["settings"]["theme"] == 1: 
+        if self.current_profile_settings["settings"]["theme"] == 1: 
             chosentheme = themes.light
-        if self.configData["settings"]["theme"] == 2: 
+        if self.current_profile_settings["settings"]["theme"] == 2: 
             chosentheme = themes.blue
-        if self.configData["settings"]["theme"] == 3: 
+        if self.current_profile_settings["settings"]["theme"] == 3: 
             chosentheme = themes.orange
-        if self.configData["settings"]["theme"] == 4: 
+        if self.current_profile_settings["settings"]["theme"] == 4: 
             chosentheme = themes.red
-        if self.configData["settings"]["theme"] == 5: 
+        if self.current_profile_settings["settings"]["theme"] == 5: 
             chosentheme = themes.pink
-        if self.configData["settings"]["theme"] == 6: 
+        if self.current_profile_settings["settings"]["theme"] == 6: 
             chosentheme = themes.lightsout
 
         # april fools day stuff. pls dont spoil for others!11!1

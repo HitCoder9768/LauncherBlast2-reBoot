@@ -1,8 +1,10 @@
 * Feature list
     - Button and dialog window to see detailed info on individual SRB2 servers.
     - Mod downloader
+    - Mod "installer" and "uninstaller"
     - SRB2 update downloader
     - Profiles
+    - Make a mod cache to limit scraping
 * Bug list
     - ModBrowser QWebEngineView() is white, and that doesn't match the theme
     - Button next to "Play" Button has inconsistently rendered icon
@@ -10,3 +12,9 @@
     - Add myself to about page credits
 * Refactoring
     - Maybe launch command should be built using an array instead of a long string?
+* Changelog
+    - Refactored project to better follow python conventions
+    - Settings save in TOML instead of JSON, making them easier for the user to edit 
+    - Implemented multithreading 
+    - Added master server browser 
+    - Added mod browser
