@@ -14,7 +14,6 @@ from PySide6.QtCore import Signal
 import EditServerMain
 import characterText
 from LauncherThreading import QueryMessageBoard, QueryMasterServer
-from networking.mb_query import MBQuery
 from LauncherUI import *
 from qss import themes
 
@@ -24,9 +23,17 @@ versionString = "reBoot-2.0"
 
 
 class MainWindow(QMainWindow):
+    # Emits instance of Mod() class from self.mods_list
     mod_description_sig = Signal(object)
+    # Emits self.mods_list
     mod_list_sig = Signal(dict)
+    # Emits bool, telling QThread to query the master server
     query_ms_sig = Signal(bool)
+    # Emits mod download URL string
+    download_mod_url_sig = Signal(str)
+    # Emits mod download filepath
+    download_mod_path_sig = Signal(str)
+    
 
     def __init__(self, app):
         super().__init__()
@@ -50,9 +57,6 @@ class MainWindow(QMainWindow):
         # Dict associating mod list widget items with mods:
         self.mods_list = {}
 
-        # SRB2 Message Board Data
-        self.mb = MBQuery()
-
         # Mod Downloader Multithreading
         self.mb_qthread = QueryMessageBoard()
         self.mb_qthread.start()
@@ -70,7 +74,7 @@ class MainWindow(QMainWindow):
         try:
             self.query_ms()  # populates master server list when the program first runs
         except:
-            pass
+            print("Querying master server failed.")
         
         # load servers from file ===================================================== #
         # self.loadServerList()
@@ -224,22 +228,25 @@ class MainWindow(QMainWindow):
             asset_img = ":/assets/img/metal.png"
             self.ui.PlayerSkinInfoText.setText(characterText.metal)
 
-        self.ui.PlayerSkinImage.setPixmap(QtGui.QPixmap(asset_img).scaled(135,
-                                                                          190,
-                                                                          QtCore.Qt.KeepAspectRatio,
-                                                                          QtCore.Qt.FastTransformation))
+        self.ui.PlayerSkinImage.setPixmap(
+            QtGui.QPixmap(asset_img).scaled(135,
+                                            190,
+                                            QtCore.Qt.KeepAspectRatio,
+                                            QtCore.Qt.FastTransformation))
         return
 
     def get_launch_command(self):
         """
-        This converts all of the launcher inputs to a single-string command to launch SRB2
+        This converts all of the launcher inputs to a single-string command to 
+        launch SRB2
         """
         ui = self.ui
         com = ""
-        if self.ui.WineToggle.isChecked() and self.ui.WineToggle.isEnabled(): com += "wine "
+        if self.ui.WineToggle.isChecked() and self.ui.WineToggle.isEnabled(): 
+            com += "wine "
         com += "\"" + ui.GameExecFilePathInput.text() + "\""
 
-        # game settings (from game settings tab) ===================================== #
+        # game settings (from game settings tab) ============================= #
         if ui.GameRendererSetting.currentIndex() == 0: com += " +renderer 1"
         if ui.GameRendererSetting.currentIndex() == 1: com += " +renderer 2"
         if ui.GameFullscreenSetting.currentIndex() == 0: com += " +fullscreen 1"
@@ -254,20 +261,24 @@ class MainWindow(QMainWindow):
             com += " -width " + ui.GameHorizontalResolutionInput.text() + " -height " \
                    + ui.GameVerticalResolutionInput.text()
         if ui.PlayerNameInput.text() != "": com += " +name \"" + ui.PlayerNameInput.text() + "\""
-        if ui.PlayerColorInput.currentIndex() != 0: com += " +color " + str(ui.PlayerColorInput.currentText().lower())
-        if ui.PlayerSkinInput.currentIndex() != 0: com += " +skin " + str(
+        if ui.PlayerColorInput.currentIndex() != 0:
+            com += " +color " + str(ui.PlayerColorInput.currentText().lower())
+        if ui.PlayerSkinInput.currentIndex() != 0:
+            com += " +skin " + str(
             ui.PlayerSkinInput.currentText().lower().replace(" ", ""))
 
-        # get all files ============================================================== #
+        # get all files ====================================================== #
         com += " -file"
         for i in range(ui.GameFilesList.count()):
             com += " \"" + ui.GameFilesList.item(i).text() + "\""
 
-        # add a script =============================================================== #
-        if ui.GameFilesExecScriptInput.text() != "": com += " +exec " + ui.GameFilesExecScriptInput.text()
+        # add a script ======================================================= #
+        if ui.GameFilesExecScriptInput.text() != "": 
+            com += " +exec " + ui.GameFilesExecScriptInput.text()
 
-        # custom parameters ========================================================== #
-        if ui.GameArgsInput.text() != "": com += " " + ui.GameArgsInput.text()
+        # custom parameters ================================================== #
+        if ui.GameArgsInput.text() != "": 
+            com += " " + ui.GameArgsInput.text()
 
         return com
 
@@ -381,12 +392,21 @@ class MainWindow(QMainWindow):
         return
 
     #
-
-    def download_mod(self):
+    
+    def get_selected_mod(self):
         selection = self.ui.ModsList.currentItem().text()
         mod = self.mods_list[selection]
-        path = self.ui.GameExecFilePathInput.text()
-        modding.downloader.download_mod(path, mod.download_url)
+        return mod
+
+    def download_mod(self):
+        if self.mods_list:
+            mod = self.get_selected_mod()
+            mod.set_download_url()
+            path = self.ui.GameExecFilePathInput.text()
+            # TODO: delete next line
+            path = "~/"
+            self.download_mod_sig.emit(mod.download_url)
+            self.download_mod_path_sig.emit(path)
 
     def append_mod_to_list(self, mod_name):
         new_item = QtWidgets.QListWidgetItem()
@@ -394,31 +414,44 @@ class MainWindow(QMainWindow):
         self.ui.ModsList.addItem(new_item)
 
     def load_mod_page(self):
+        self.ui.ModStatusLabel.setText("Downloading mod description...")
         if self.mods_list:
-            selection = self.ui.ModsList.currentItem().text()
-            mod = self.mods_list[selection]
-            self.mod_description_sig.emit(mod)
+            mod = self.get_selected_mod()
+            self.ui.ModBrowser.load(mod.url)
+            self.ui.ModBrowser.remo
+            self.ui.ModStatusLabel.setText("Click on a mod to see more information.")
+            # Alternatively, if we only want a mod description instead
+            #   of the full web page:
+            #self.mod_description_sig.emit(mod)
 
     def refresh_mods_list(self):
         # TODO: multithreading to get rid of lag
+        self.ui.ModStatusLabel.setText("Downloading mods list...")
         self.ui.ModsList.clear()
         self.mod_list_sig.emit(self.ui.ModTypeCombo.currentText())
 
-    def on_mod_description(self, description):
-        self.ui.ModBrowser.setText(description)
+    def on_mod_description(self, mod):
+        self.ui.ModStatusLabel.setText("Click on a mod to see more information.")
+        self.ui.ModBrowser.setHtml(mod.description, mod.url)
+        self.ui.ModBrowser.load(mod.url)
 
     def on_mod_list(self, mod_list):
+        self.ui.ModStatusLabel.setText("Click on a mod to see more "
+                                       "information.")
         self.ui.ModsList.clear()
         self.mods_list = mod_list
         for item in self.mods_list:
             self.append_mod_to_list(item)
 
     def query_ms(self):
+        self.ui.MSStatusLabel.setText("Downloading servers list...")
         self.ui.MasterServerList.clear()
         print("query_ms")
         self.query_ms_sig.emit(True)
     
     def on_server_list(self, server_list):
+        self.ui.MSStatusLabel.setText('Click "Refresh" to download a list of '
+                                      'servers.')
         print("on_server_list")
         del self.master_server_list
         self.master_server_list = {}
@@ -686,13 +719,20 @@ class MainWindow(QMainWindow):
             self.setStyleSheet(themes.main + themes.dark)
             return
 
-        if self.configData["settings"]["theme"] == 0: chosentheme = themes.dark
-        if self.configData["settings"]["theme"] == 1: chosentheme = themes.light
-        if self.configData["settings"]["theme"] == 2: chosentheme = themes.blue
-        if self.configData["settings"]["theme"] == 3: chosentheme = themes.orange
-        if self.configData["settings"]["theme"] == 4: chosentheme = themes.red
-        if self.configData["settings"]["theme"] == 5: chosentheme = themes.pink
-        if self.configData["settings"]["theme"] == 6: chosentheme = themes.lightsout
+        if self.configData["settings"]["theme"] == 0: 
+            chosentheme = themes.dark
+        if self.configData["settings"]["theme"] == 1: 
+            chosentheme = themes.light
+        if self.configData["settings"]["theme"] == 2: 
+            chosentheme = themes.blue
+        if self.configData["settings"]["theme"] == 3: 
+            chosentheme = themes.orange
+        if self.configData["settings"]["theme"] == 4: 
+            chosentheme = themes.red
+        if self.configData["settings"]["theme"] == 5: 
+            chosentheme = themes.pink
+        if self.configData["settings"]["theme"] == 6: 
+            chosentheme = themes.lightsout
 
         # april fools day stuff. pls dont spoil for others!11!1
         if (fool):
@@ -731,7 +771,7 @@ class MainWindow(QMainWindow):
         print("Current: " + versionString)
         ver_num = version_got.replace("reBoot-", "")
 
-        # check launcher version ===================================================== #
+        # check launcher version ============================================= #
         if float(ver_num) > float(versionString.replace("reBoot-", "")):
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Information)

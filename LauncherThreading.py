@@ -3,16 +3,17 @@ import time
 from PySide6 import QtCore
 from PySide6.QtCore import Signal
 
-from networking.mb_query import MBQuery
+from networking import mb_query
 from networking.ms_query import get_server_list, ms_url, ms_kart_url
 
 class QueryMessageBoard(QtCore.QThread):
-    mod_description_sig1 = Signal(str)
+    # Emits a string describing the mod
+    mod_description_sig1 = Signal(object)
+    # Emits a list of mods
     mod_list_sig1 = Signal(dict)
 
     def __init__(self, parent=None):
         QtCore.QThread.__init__(self, parent)
-        self.mb_query = MBQuery()
         self.mod = None
         self.get_mod_description = False
         self.get_mods = False
@@ -23,7 +24,7 @@ class QueryMessageBoard(QtCore.QThread):
         self.mods_type = mods_type
 
     def on_request_mod_desc(self, mod):
-        self.get_mod_description = True
+        print("on_request_mod_desc")
         self.mod = mod
 
     def run(self):
@@ -33,16 +34,16 @@ class QueryMessageBoard(QtCore.QThread):
                 self.mods_list = {}
                 subforum_url = None
                 if self.mods_type == "Maps":
-                    subforum_url = self.mb_query.maps_sublink
+                    subforum_url = mb_query.maps_sublink
                 if self.mods_type == "Characters":
-                    subforum_url = self.mb_query.characters_sublink
+                    subforum_url = mb_query.characters_sublink
                 if self.mods_type == "Lua":
-                    subforum_url = self.mb_query.lua_sublink
+                    subforum_url = mb_query.lua_sublink
                 if self.mods_type == "Assets":
-                    subforum_url = self.mb_query.assets_sublink
+                    subforum_url = mb_query.assets_sublink
                 if self.mods_type == "Misc":
-                    subforum_url = self.mb_query.misc_sublink
-                mods = self.mb_query.get_mods(subforum_url)
+                    subforum_url = mb_query.misc_sublink
+                mods = mb_query.get_mods(subforum_url)
                 for mod in mods:
                     entry_text = mod.name
                     self.mods_list[entry_text] = mod
@@ -54,17 +55,14 @@ class QueryMessageBoard(QtCore.QThread):
                 self.get_mods = False
                 self.mods_type = None
 
-            if self.get_mod_description:
-                if self.mod:
-                    description = self.mb_query.get_mod_description(self.mod)
-                    self.mod_description_sig1.emit(description)
+            if self.mod:
+                self.mod.get_description()
+                self.mod_description_sig1.emit(self.mod)
 
                 # Reset variables
                 self.mod = None
-                self.get_mod_description = False
 
             time.sleep(1)
-            
             
 class QueryMasterServer(QtCore.QThread):
     server_list_sig1 = Signal(list)
@@ -89,3 +87,27 @@ class QueryMasterServer(QtCore.QThread):
                 self.server_list_sig1.emit(server_list)
                 self.query_ms = False                    
             time.sleep(1)
+
+class ModDownloader(QtCore.QThread):
+    mod_filepath_sig1 = Signal(str)
+    
+    def __init__(self, parent=None):
+        QtCore.QThread.__init__(self, parent)
+        self.download_url = None
+        self.filepath = None
+        self.running = True
+        
+    def on_download_button(self, download_url):
+        self.download_url = download_url
+        
+    def on_filepath_emit(self, filepath):
+        self.filepath = filepath
+        
+    def run(self):
+        while self.running:
+            if self.download_url and self.filepath:
+                filepath = mb_query.download_mod(self.download_url,
+                                                    self.filepath)
+                self.mod_filepath_sig1.emit(filepath)
+                self.download_url = None
+                self.filepath = None

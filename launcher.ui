@@ -10,6 +10,12 @@
     <height>638</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -496,7 +502,7 @@
                   <item>
                    <widget class="QStackedWidget" name="GameContentStackedWidget">
                     <property name="currentIndex">
-                     <number>0</number>
+                     <number>1</number>
                     </property>
                     <widget class="QWidget" name="ProfilePage">
                      <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -652,7 +658,7 @@
                       <item>
                        <widget class="QTabWidget" name="tabWidget">
                         <property name="currentIndex">
-                         <number>0</number>
+                         <number>1</number>
                         </property>
                         <widget class="QWidget" name="tab_3">
                          <attribute name="title">
@@ -1007,7 +1013,62 @@
                                </widget>
                               </item>
                               <item>
-                               <widget class="QTextBrowser" name="ModBrowser"/>
+                               <widget class="QWebEngineView" name="ModBrowser">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                                <property name="palette">
+                                 <palette>
+                                  <active>
+                                   <colorrole role="WindowText">
+                                    <brush brushstyle="SolidPattern">
+                                     <color alpha="255">
+                                      <red>255</red>
+                                      <green>255</green>
+                                      <blue>255</blue>
+                                     </color>
+                                    </brush>
+                                   </colorrole>
+                                  </active>
+                                  <inactive>
+                                   <colorrole role="WindowText">
+                                    <brush brushstyle="SolidPattern">
+                                     <color alpha="255">
+                                      <red>255</red>
+                                      <green>255</green>
+                                      <blue>255</blue>
+                                     </color>
+                                    </brush>
+                                   </colorrole>
+                                  </inactive>
+                                  <disabled>
+                                   <colorrole role="WindowText">
+                                    <brush brushstyle="SolidPattern">
+                                     <color alpha="255">
+                                      <red>110</red>
+                                      <green>113</green>
+                                      <blue>115</blue>
+                                     </color>
+                                    </brush>
+                                   </colorrole>
+                                  </disabled>
+                                 </palette>
+                                </property>
+                                <property name="autoFillBackground">
+                                 <bool>true</bool>
+                                </property>
+                                <property name="styleSheet">
+                                 <string notr="true">* {background-color: 1f1f1f;}</string>
+                                </property>
+                                <property name="url">
+                                 <url>
+                                  <string>about:blank</string>
+                                 </url>
+                                </property>
+                               </widget>
                               </item>
                              </layout>
                             </item>
@@ -1015,6 +1076,13 @@
                           </item>
                           <item>
                            <layout class="QHBoxLayout" name="horizontalLayout_20">
+                            <item>
+                             <widget class="QLabel" name="ModStatusLabel">
+                              <property name="text">
+                               <string>Click &quot;Refresh&quot; to see a list of available mods.</string>
+                              </property>
+                             </widget>
+                            </item>
                             <item>
                              <spacer name="horizontalSpacer_7">
                               <property name="orientation">
@@ -2337,8 +2405,8 @@ font-size: 12pt;</string>
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>310</width>
-                           <height>343</height>
+                           <width>825</width>
+                           <height>510</height>
                           </rect>
                          </property>
                          <property name="styleSheet">
@@ -2378,6 +2446,13 @@ font-size: 12pt;</string>
                               </item>
                               <item>
                                <layout class="QHBoxLayout" name="horizontalLayout_18">
+                                <item>
+                                 <widget class="QLabel" name="MSStatusLabel">
+                                  <property name="text">
+                                   <string>Click &quot;Refresh&quot; to download a list of servers.</string>
+                                  </property>
+                                 </widget>
+                                </item>
                                 <item>
                                  <spacer name="horizontalSpacer_6">
                                   <property name="orientation">
@@ -2783,7 +2858,7 @@ font-size: 12pt;</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>96</width>
+                <width>87</width>
                 <height>87</height>
                </rect>
               </property>
@@ -2966,6 +3041,13 @@ p, li { white-space: pre-wrap; }
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebEngineView</class>
+   <extends>QWidget</extends>
+   <header location="global">QtWebEngineWidgets/QWebEngineView</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="launcherblast2.qrc"/>
  </resources>
