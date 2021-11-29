@@ -1126,9 +1126,9 @@
                              </widget>
                             </item>
                             <item>
-                             <widget class="QPushButton" name="ViewModButton">
+                             <widget class="QPushButton" name="OpenPageButton">
                               <property name="text">
-                               <string>View Page</string>
+                               <string>Open Page</string>
                               </property>
                              </widget>
                             </item>

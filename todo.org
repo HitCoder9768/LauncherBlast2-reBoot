@@ -1,7 +1,7 @@
 * Feature list
     - Button and dialog window to see detailed info on individual SRB2 servers.
-    - Download mods
-    - Download SRB2 updates
+    - Mod downloader
+    - SRB2 update downloader
     - Profiles
 * Bug list
     - ModBrowser QWebEngineView() is white, and that doesn't match the theme

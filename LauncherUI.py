@@ -534,10 +534,10 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_20.addWidget(self.ModTypeCombo)
 
-        self.ViewModButton = QPushButton(self.tab_4)
-        self.ViewModButton.setObjectName(u"ViewModButton")
+        self.OpenPageButton = QPushButton(self.tab_4)
+        self.OpenPageButton.setObjectName(u"OpenPageButton")
 
-        self.horizontalLayout_20.addWidget(self.ViewModButton)
+        self.horizontalLayout_20.addWidget(self.OpenPageButton)
 
         self.RefreshModsButton = QPushButton(self.tab_4)
         self.RefreshModsButton.setObjectName(u"RefreshModsButton")
@@ -1436,7 +1436,7 @@ class Ui_MainWindow(object):
         self.ModTypeCombo.setItemText(3, QCoreApplication.translate("MainWindow", u"Assets", None))
         self.ModTypeCombo.setItemText(4, QCoreApplication.translate("MainWindow", u"Misc", None))
 
-        self.ViewModButton.setText(QCoreApplication.translate("MainWindow", u"View Page", None))
+        self.OpenPageButton.setText(QCoreApplication.translate("MainWindow", u"Open Page", None))
         self.RefreshModsButton.setText(QCoreApplication.translate("MainWindow", u"Refresh", None))
         self.DownloadModButton.setText(QCoreApplication.translate("MainWindow", u"Download", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), QCoreApplication.translate("MainWindow", u"Download Mods", None))

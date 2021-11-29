@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import webbrowser
 import urllib
 import urllib.parse
 from datetime import date
@@ -142,6 +143,7 @@ class MainWindow(QMainWindow):
         self.ui.RefreshModsButton.clicked.connect(self.refresh_mods_list)
         self.ui.DownloadModButton.clicked.connect(self.download_mod)
         self.ui.ModsList.itemSelectionChanged.connect(self.load_mod_page)
+        self.ui.OpenPageButton.clicked.connect(self.open_mod_page)
 
         # server list buttons ======================================================== #
         self.ui.AddServerButton.clicked.connect(self.show_add_server_dialog)
@@ -167,6 +169,9 @@ class MainWindow(QMainWindow):
         # and then add the spacer at the bottom
         spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.ui.verticalLayout_20.addItem(spacerItem)
+        
+    def open_url(self, url):
+        webbrowser.open(url)
 
     def show_game_options_dropdown(self):
         menu = QMenu()
@@ -392,6 +397,10 @@ class MainWindow(QMainWindow):
         return
 
     #
+    
+    def open_mod_page(self):
+        mod = self.get_selected_mod()
+        self.open_url(mod.url)
     
     def get_selected_mod(self):
         selection = self.ui.ModsList.currentItem().text()
