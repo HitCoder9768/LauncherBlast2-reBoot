@@ -793,7 +793,6 @@ class MainWindow(QMainWindow):
             toml_settings["files"].append(self.ui.GameFilesList.item(i).text())
         
         return toml_settings
-        pass
     
     def save_profile_file(self, filename):
         """This saves the global settings, which is different from profiles

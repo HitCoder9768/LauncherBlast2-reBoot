@@ -10,6 +10,7 @@
     - Button next to "Play" Button has inconsistently rendered icon
 * Tasks
     - Add myself to about page credits
+    - Properly document new functions with docstrings
 * Refactoring
     - Maybe launch command should be built using an array instead of a long string?
 * Changelog
