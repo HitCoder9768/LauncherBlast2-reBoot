@@ -17,11 +17,12 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComboBox,
-    QFrame, QGridLayout, QHBoxLayout, QLabel,
-    QLineEdit, QListView, QListWidget, QListWidgetItem,
-    QMainWindow, QPushButton, QRadioButton, QScrollArea,
-    QSizePolicy, QSpacerItem, QSplitter, QStackedWidget,
-    QTabWidget, QTextEdit, QVBoxLayout, QWidget)
+    QFrame, QGridLayout, QGroupBox, QHBoxLayout,
+    QLabel, QLineEdit, QListView, QListWidget,
+    QListWidgetItem, QMainWindow, QPushButton, QRadioButton,
+    QScrollArea, QSizePolicy, QSpacerItem, QSplitter,
+    QStackedWidget, QTabWidget, QTextEdit, QVBoxLayout,
+    QWidget)
 import launcherblast2_rc
 
 class Ui_MainWindow(object):
@@ -462,33 +463,61 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tab_3, "")
         self.tab_4 = QWidget()
         self.tab_4.setObjectName(u"tab_4")
-        self.verticalLayout_21 = QVBoxLayout(self.tab_4)
-        self.verticalLayout_21.setObjectName(u"verticalLayout_21")
-        self.horizontalLayout_21 = QHBoxLayout()
-        self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
-        self.verticalLayout_26 = QVBoxLayout()
+        self.verticalLayout_26 = QVBoxLayout(self.tab_4)
         self.verticalLayout_26.setObjectName(u"verticalLayout_26")
-        self.label_7 = QLabel(self.tab_4)
-        self.label_7.setObjectName(u"label_7")
-
-        self.verticalLayout_26.addWidget(self.label_7)
-
-        self.ModsList = QListWidget(self.tab_4)
-        self.ModsList.setObjectName(u"ModsList")
-
-        self.verticalLayout_26.addWidget(self.ModsList)
-
-
-        self.horizontalLayout_21.addLayout(self.verticalLayout_26)
-
-        self.verticalLayout_25 = QVBoxLayout()
+        self.widget_3 = QWidget(self.tab_4)
+        self.widget_3.setObjectName(u"widget_3")
+        sizePolicy.setHeightForWidth(self.widget_3.sizePolicy().hasHeightForWidth())
+        self.widget_3.setSizePolicy(sizePolicy)
+        self.verticalLayout_25 = QVBoxLayout(self.widget_3)
         self.verticalLayout_25.setObjectName(u"verticalLayout_25")
-        self.label_6 = QLabel(self.tab_4)
+        self.splitter_2 = QSplitter(self.widget_3)
+        self.splitter_2.setObjectName(u"splitter_2")
+        sizePolicy.setHeightForWidth(self.splitter_2.sizePolicy().hasHeightForWidth())
+        self.splitter_2.setSizePolicy(sizePolicy)
+        self.splitter_2.setOrientation(Qt.Horizontal)
+        self.groupBox = QGroupBox(self.splitter_2)
+        self.groupBox.setObjectName(u"groupBox")
+        sizePolicy.setHeightForWidth(self.groupBox.sizePolicy().hasHeightForWidth())
+        self.groupBox.setSizePolicy(sizePolicy)
+        self.verticalLayout_24 = QVBoxLayout(self.groupBox)
+        self.verticalLayout_24.setSpacing(6)
+        self.verticalLayout_24.setObjectName(u"verticalLayout_24")
+        self.verticalLayout_24.setContentsMargins(0, 0, 0, 0)
+        self.label_7 = QLabel(self.groupBox)
+        self.label_7.setObjectName(u"label_7")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.label_7.sizePolicy().hasHeightForWidth())
+        self.label_7.setSizePolicy(sizePolicy2)
+
+        self.verticalLayout_24.addWidget(self.label_7)
+
+        self.ModsList = QListWidget(self.groupBox)
+        self.ModsList.setObjectName(u"ModsList")
+        sizePolicy.setHeightForWidth(self.ModsList.sizePolicy().hasHeightForWidth())
+        self.ModsList.setSizePolicy(sizePolicy)
+
+        self.verticalLayout_24.addWidget(self.ModsList)
+
+        self.splitter_2.addWidget(self.groupBox)
+        self.groupBox_2 = QGroupBox(self.splitter_2)
+        self.groupBox_2.setObjectName(u"groupBox_2")
+        sizePolicy.setHeightForWidth(self.groupBox_2.sizePolicy().hasHeightForWidth())
+        self.groupBox_2.setSizePolicy(sizePolicy)
+        self.verticalLayout_21 = QVBoxLayout(self.groupBox_2)
+        self.verticalLayout_21.setSpacing(6)
+        self.verticalLayout_21.setObjectName(u"verticalLayout_21")
+        self.verticalLayout_21.setContentsMargins(6, 0, 0, 0)
+        self.label_6 = QLabel(self.groupBox_2)
         self.label_6.setObjectName(u"label_6")
+        sizePolicy2.setHeightForWidth(self.label_6.sizePolicy().hasHeightForWidth())
+        self.label_6.setSizePolicy(sizePolicy2)
 
-        self.verticalLayout_25.addWidget(self.label_6)
+        self.verticalLayout_21.addWidget(self.label_6)
 
-        self.ModBrowser = QWebEngineView(self.tab_4)
+        self.ModBrowser = QWebEngineView(self.groupBox_2)
         self.ModBrowser.setObjectName(u"ModBrowser")
         sizePolicy.setHeightForWidth(self.ModBrowser.sizePolicy().hasHeightForWidth())
         self.ModBrowser.setSizePolicy(sizePolicy)
@@ -505,13 +534,14 @@ class Ui_MainWindow(object):
         self.ModBrowser.setStyleSheet(u"* {background-color: 1f1f1f;}")
         self.ModBrowser.setUrl(QUrl(u"about:blank"))
 
-        self.verticalLayout_25.addWidget(self.ModBrowser)
+        self.verticalLayout_21.addWidget(self.ModBrowser)
+
+        self.splitter_2.addWidget(self.groupBox_2)
+
+        self.verticalLayout_25.addWidget(self.splitter_2)
 
 
-        self.horizontalLayout_21.addLayout(self.verticalLayout_25)
-
-
-        self.verticalLayout_21.addLayout(self.horizontalLayout_21)
+        self.verticalLayout_26.addWidget(self.widget_3)
 
         self.horizontalLayout_20 = QHBoxLayout()
         self.horizontalLayout_20.setObjectName(u"horizontalLayout_20")
@@ -550,7 +580,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_20.addWidget(self.DownloadModButton)
 
 
-        self.verticalLayout_21.addLayout(self.horizontalLayout_20)
+        self.verticalLayout_26.addLayout(self.horizontalLayout_20)
 
         self.tabWidget.addTab(self.tab_4, "")
 
@@ -710,11 +740,11 @@ class Ui_MainWindow(object):
         self.PlayerSkinInput.addItem("")
         self.PlayerSkinInput.addItem("")
         self.PlayerSkinInput.setObjectName(u"PlayerSkinInput")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.PlayerSkinInput.sizePolicy().hasHeightForWidth())
-        self.PlayerSkinInput.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.PlayerSkinInput.sizePolicy().hasHeightForWidth())
+        self.PlayerSkinInput.setSizePolicy(sizePolicy3)
         self.PlayerSkinInput.setStyleSheet(u"")
         self.PlayerSkinInput.setEditable(True)
 
@@ -1227,11 +1257,11 @@ class Ui_MainWindow(object):
         self.GameProfileComboBox.addItem("")
         self.GameProfileComboBox.addItem("")
         self.GameProfileComboBox.setObjectName(u"GameProfileComboBox")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.GameProfileComboBox.sizePolicy().hasHeightForWidth())
-        self.GameProfileComboBox.setSizePolicy(sizePolicy3)
+        sizePolicy4 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.GameProfileComboBox.sizePolicy().hasHeightForWidth())
+        self.GameProfileComboBox.setSizePolicy(sizePolicy4)
 
         self.horizontalLayout_3.addWidget(self.GameProfileComboBox)
 

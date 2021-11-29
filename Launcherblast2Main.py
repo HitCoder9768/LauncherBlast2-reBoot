@@ -427,8 +427,7 @@ class MainWindow(QMainWindow):
         if self.mods_list:
             mod = self.get_selected_mod()
             self.ui.ModBrowser.load(mod.url)
-            self.ui.ModBrowser.remo
-            self.ui.ModStatusLabel.setText("Click on a mod to see more information.")
+        self.ui.ModStatusLabel.setText("Click on a mod to see more information.")
             # Alternatively, if we only want a mod description instead
             #   of the full web page:
             #self.mod_description_sig.emit(mod)
