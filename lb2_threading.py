@@ -89,7 +89,7 @@ class QueryMasterServer(QtCore.QThread):
             time.sleep(1)
 
 class ModDownloader(QtCore.QThread):
-    mod_filepath_sig1 = Signal(str)
+    mod_filepath_sig1 = Signal(list)
     
     def __init__(self, parent=None):
         QtCore.QThread.__init__(self, parent)
@@ -106,8 +106,10 @@ class ModDownloader(QtCore.QThread):
     def run(self):
         while self.running:
             if self.download_url and self.filepath:
-                filepath = mb_query.download_mod(self.download_url,
-                                                    self.filepath)
-                self.mod_filepath_sig1.emit(filepath)
+                filepath = mb_query.download_mod(self.filepath, self.download_url)
+                # Extract files, get wads/pk3/etc to add.
+
+                self.mod_filepath_sig1.emit([filepath])
                 self.download_url = None
                 self.filepath = None
+            time.sleep(1)

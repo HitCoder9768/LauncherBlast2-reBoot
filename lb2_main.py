@@ -15,7 +15,7 @@ from PySide6.QtCore import Signal
 
 import edit_server_main
 import char_text
-from lb2_threading import QueryMessageBoard, QueryMasterServer
+from lb2_threading import QueryMessageBoard, QueryMasterServer, ModDownloader
 from lb2_ui import *
 from qss import themes
 
@@ -64,13 +64,23 @@ class MainWindow(QMainWindow):
         # Dict associating mod list widget items with mods:
         self.mods_list = {}
 
-        # Mod Downloader Multithreading
+        # MB Query Multithreading
         self.mb_qthread = QueryMessageBoard()
         self.mb_qthread.start()
         self.mod_list_sig.connect(self.mb_qthread.on_request_mod_list)
         self.mod_description_sig.connect(self.mb_qthread.on_request_mod_desc)
         self.mb_qthread.mod_list_sig1.connect(self.on_mod_list)
         self.mb_qthread.mod_description_sig1.connect(self.on_mod_description)
+
+        # Download mod multithreading
+        self.mod_download_qthread = ModDownloader()
+        self.mod_download_qthread.start()
+        self.download_mod_url_sig.connect(self.mod_download_qthread.on_download_button)
+        self.download_mod_path_sig.connect(self.mod_download_qthread.on_filepath_emit)
+        self.mod_download_qthread.mod_filepath_sig1.connect(self.add_mod_to_files)
+
+        # Emits mod download filepath
+        download_mod_path_sig = Signal(str)
         
         # Master Server Multithreading
         self.ms_qthread = QueryMasterServer()
@@ -407,12 +417,14 @@ class MainWindow(QMainWindow):
 
     def download_mod(self):
         if self.mods_list:
+
             mod = self.get_selected_mod()
             mod.set_download_url()
             path = self.ui.GameExecFilePathInput.text()
             # TODO: delete next line
             path = "~/"
-            self.download_mod_sig.emit(mod.download_url)
+            self.ui.ModStatusLabel.setText("Downloading mod...")
+            self.download_mod_url_sig.emit(mod.download_url)
             self.download_mod_path_sig.emit(path)
 
     def append_mod_to_list(self, mod_name):
@@ -448,6 +460,13 @@ class MainWindow(QMainWindow):
         self.mods_list = mod_list
         for item in self.mods_list:
             self.append_mod_to_list(item)
+
+    def add_mod_to_files(self, filepaths_list):
+        self.ui.ModStatusLabel.setText("Click on a mod to see more information.")
+        pass
+        #for filepath in filepaths_list:
+        #    self.add_file(filepath)
+
 
     # Master server browser
 

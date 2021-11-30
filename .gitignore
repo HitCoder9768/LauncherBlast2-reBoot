@@ -2,7 +2,6 @@ LauncherBlast2Conf.json
 LauncherBlast2_settings.toml
 default_profile.toml
 lb2ServerList.json
-qss/
 venv/
 .vscode/
 .qt_for_python/

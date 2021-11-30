@@ -120,15 +120,18 @@ def get_list_of_thread_names(parsed_html):
 def get_list_of_thread_links(parsed_html):
     return parsed_html.xpath('.//div[@class="structItem-title"]/*[@data-tp-primary="on"]/@href')
 
-def download_file(download_url):
-    local_filename = download_url.split('/')[-1]
+def download_mod(base_path, download_url):
+    filepath = base_path + download_url.split('/')[-1]
     # NOTE the stream=True parameter below
-    with requests.get(download_url, stream=True) as r:
+    with requests.get(download_url, stream=True, headers=headers) as r:
         r.raise_for_status()
-        with open(local_filename, 'wb') as f:
+        with open(filepath, 'wb') as f:
             for chunk in r.iter_content(chunk_size=8192):
                 # If you have chunk encoded response uncomment if
                 # and set chunk_size parameter to None.
                 #if chunk:
                 f.write(chunk)
-    return local_filename
+    return filepath
+
+def extract_mod(filepath):
+    pass
