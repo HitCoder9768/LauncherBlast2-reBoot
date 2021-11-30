@@ -121,6 +121,7 @@ def get_list_of_thread_links(parsed_html):
     return parsed_html.xpath('.//div[@class="structItem-title"]/*[@data-tp-primary="on"]/@href')
 
 def download_mod(base_path, download_url):
+    # TODO: apparently https://.../download isn't the actual download URL! It crashes this function.
     filepath = base_path + download_url.split('/')[-1]
     # NOTE the stream=True parameter below
     with requests.get(download_url, stream=True, headers=headers) as r:
@@ -134,4 +135,5 @@ def download_mod(base_path, download_url):
     return filepath
 
 def extract_mod(filepath):
-    pass
+    extracted_files = []  # full filepaths
+    return extracted_files

@@ -63,7 +63,8 @@ class QueryMessageBoard(QtCore.QThread):
                 self.mod = None
 
             time.sleep(1)
-            
+
+
 class QueryMasterServer(QtCore.QThread):
     server_list_sig1 = Signal(list)
 
@@ -87,6 +88,7 @@ class QueryMasterServer(QtCore.QThread):
                 self.server_list_sig1.emit(server_list)
                 self.query_ms = False                    
             time.sleep(1)
+
 
 class ModDownloader(QtCore.QThread):
     mod_filepath_sig1 = Signal(list)
