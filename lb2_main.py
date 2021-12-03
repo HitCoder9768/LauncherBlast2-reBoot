@@ -88,6 +88,12 @@ class MainWindow(QMainWindow):
         self.query_ms_sig.connect(self.ms_qthread.on_refresh)
         self.ms_qthread.server_list_sig1.connect(self.on_server_list)
         
+        # QTimer helps us know when user stops typing into profile name textbox
+        self.typing_timer = QtCore.QTimer()
+        self.typing_timer.setSingleShot(True)
+        self.typing_timer.timeout.connect(self.alter_profile_info)
+        self.ui.ProfileNameInput.textChanged.connect(self.start_typing_timer)
+        
         # load servers from file ===================================================== #
         # self.loadServerList()
         self.has_loaded_servers = False
@@ -467,7 +473,6 @@ class MainWindow(QMainWindow):
         #for filepath in filepaths_list:
         #    self.add_file(filepath)
 
-
     # Master server browser
 
     def query_ms(self):
@@ -627,7 +632,7 @@ class MainWindow(QMainWindow):
         os.system(launch_command)
         return
 
-    #
+    # Settings and profiles
 
     def closeEvent(self, e):
         self.save_all()
@@ -671,16 +676,100 @@ class MainWindow(QMainWindow):
 
         return config_data
 
+    def set_current_profile(self, profile):
+        self.global_settings["current_profile"] = profile.key()
+    
+    def get_profile_name_list(self):
+        return self.global_settings["profiles"].keys()
+    
+    def get_profile_file_list(self):
+        return self.global_settings["profiles"].values()
+    
+    def verify_global_settings_integrity(self):
+        """Verifies that profile files specified in the global settings file
+        all exist.
+        """
+        pass
+        # TODO
+    
+    def if_profile_name_already_exists(self, name):
+        if name in self.get_profile_name_list():
+            return True
+        else:
+            return False
+    
+    def if_profile_file_already_exists(self, file):
+        if file in self.get_profile_file_list():
+            return True
+        else:
+            return False
+    
+    def generate_new_profile_name(self):
+        profile_name_list = self.get_profile_name_list()
+        starter_name = "New Profile"
+        count = 0
+        while starter_name in profile_name_list:
+            count += 1
+        if count > 0:
+            starter_name = "{} {}".format(starter_name, count)
+        return starter_name
+        
+    def generate_new_profile_filename(self):
+        profile_file_list = self.get_profile_file_list()
+        starter_name = "new_profile"
+        count = 0
+        while starter_name in profile_file_list:
+            count += 1
+        if count > 0:
+            starter_name = "{}_{}".format(starter_name, count)
+        full_filename = starter_name + ".toml"
+        return full_filename
+    
+    def add_new_profile(self):
+        name = self.generate_new_profile_name()
+        filename = self.generate_new_profile_filename()
+        self.global_settings["profiles"][name] = filename
+        self.add_profiles_to_combobox()
+        self.save_profile_file(filename)
+        self.load_different_profile(name)
+        
+    def start_typing_timer(self):
+        """Wait until there are no changes for 1 second before making changes."""
+        self.typing_timer.start(1000)
+
+    def alter_profile_info(self):
+        old_profile = self.global_settings["current_profile"]
+        old_filename = self.global_settings["profiles"][old_profile]
+        new_name = self.ui.ProfileNameInput.text()
+        new_filename = new_name.lower().replace(" ", "_") + ".toml"
+        self.ui.ProfileFilenameInput.setText(new_filename)
+        self.global_settings["profiles"].pop(old_profile)
+        self.global_settings["profiles"][new_name] = new_filename
+        self.global_settings["current_profile"] = new_name
+        self.save_global_settings_file()
+        self.save_profile_file(new_filename)
+        # Delete old profile file:
+        os.remove(old_filename)
+
+    def add_profiles_to_combobox(self):
+        profiles = self.get_profile_name_list()
+        self.ui.GameProfileComboBox.clear()
+        self.ui.GameProfileComboBox.addItems(profiles)
+        self.ui.GameProfileComboBox.setCurrentText(self.global_settings["current_profile"])
+
     def load_global_settings(self):
-        if self.is_first_run:
+        if not self.global_settings_exist():
             self.create_settings_on_first_run()
+            print("Creating settings on first run!")
         
         toml_settings = self.read_config_file(global_settings_file)
         self.global_settings = toml_settings
+        self.add_profiles_to_combobox()
+        current_profile_file = self.get_current_profile_file()
         self.current_profile_settings = self.read_config_file(
-            self.get_current_profile_file())
-        
-        return
+            current_profile_file)
+        self.ui.ProfileFilenameInput.setText(current_profile_file)
+        self.ui.ProfileNameInput.setText(self.global_settings["current_profile"])
     
     def get_current_profile_file(self):
         return self.global_settings["profiles"].get(
@@ -717,13 +806,19 @@ class MainWindow(QMainWindow):
         else:
             return False
     
-    def find_profile_files(self):
-        # TODO - find all files in launcher directory ending in 'profile.toml'
-        pass
+    def find_profile_files_in_dir(self):
+        """Finds all profile .toml files in a directory
+        """
+        profile_dir = "./"
+        profile_files = []
+        for file in os.listdir(profile_dir):
+            if file.endswith("profile.toml"):
+                profile_files.append(file)
+        return profile_files
     
     def save_global_settings_file(self):
         """This saves the global settings, which is different from profiles
-        """        
+        """
         with open(global_settings_file, "w") as f:
             new_toml_string = toml.dump(self.global_settings, f)
         print("saved config")
@@ -732,19 +827,42 @@ class MainWindow(QMainWindow):
     def create_settings_on_first_run(self):
         self.global_settings = {"current_profile": "Default",
                                 "profiles": 
-                                    {"Default": "default_profile.toml"}}
+                                    {"Default": "default_profile.toml"}
+                                }
         self.save_global_settings_file()
         self.save_profile_file(self.get_current_profile_file())
     
     def load_current_profile(self):
+        if not self.default_profile_exists():
+            self.create_settings_on_first_run()
+            print("Creating settings on first run!")
         self.current_profile_settings = self.read_config_file(
             self.get_current_profile_file())
         self.apply_profile_settings_to_gui(self.current_profile_settings)
         
+    def load_different_profile(self, profile):
+        profile_settings = self.read_config_file(profile.value())
+        self.apply_profile_settings_to_gui(profile_settings)
+        self.set_current_profile(profile)
+        
     def get_profile_dict_from_file(self, profile_filename):
+        """Gets profile settings as a dictionary from a profile TOML file
+
+        Args:
+            profile_filename (str): the profile;s TOML filename
+
+        Returns:
+            dict: profile settings as a dictionary
+        """
         return self.read_config_file(profile_filename)
 
     def apply_profile_settings_to_gui(self, profile_settings_dict):
+        """Takes profile settings dictionary and applies to the GUI state
+
+        Args:
+            profile_settings_dict (dict): A dictionary created from a
+            profile TOML file
+        """
         # now set all elements to their saved values
         self.ui.PlayerNameInput.setText(profile_settings_dict["player"]["name"])
         self.ui.PlayerSkinInput.setCurrentText(profile_settings_dict["player"]["skin"])
@@ -780,6 +898,8 @@ class MainWindow(QMainWindow):
         self.change_skin_image()
     
     def generate_profile_dict(self):
+        """Converts GUI state to a settings dictionary
+        """
         toml_settings = {"files": [], "player": {}, "game": {"resolution": {}}, "host": {}, "settings": {}}
         toml_settings["player"]["name"] = self.ui.PlayerNameInput.text()
         toml_settings["player"]["skin"] = str(self.ui.PlayerSkinInput.currentText())
@@ -814,7 +934,8 @@ class MainWindow(QMainWindow):
         return toml_settings
     
     def save_profile_file(self, filename):
-        """This saves the global settings, which is different from profiles
+        """This takes GUI state, converts to a dictionary, and saves the 
+        variables to a TOML file.
         """
         # generate the json data for the config
         
@@ -853,6 +974,8 @@ class MainWindow(QMainWindow):
 
         self.setStyleSheet(themes.main + chosentheme)
         return
+
+    # Misc
 
     def export_script(self):
         file_filter = "Batch files (*.bat);;Shell scripts (*.sh)"

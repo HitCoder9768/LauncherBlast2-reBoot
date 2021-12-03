@@ -24,6 +24,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComb
     QStackedWidget, QTabWidget, QTextEdit, QVBoxLayout,
     QWidget)
 import lb2_rc
+import lb2_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -243,10 +244,20 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_10.addWidget(self.label)
 
-        self.lineEdit = QLineEdit(self.ProfilePage)
-        self.lineEdit.setObjectName(u"lineEdit")
+        self.ProfileNameInput = QLineEdit(self.ProfilePage)
+        self.ProfileNameInput.setObjectName(u"ProfileNameInput")
 
-        self.verticalLayout_10.addWidget(self.lineEdit)
+        self.verticalLayout_10.addWidget(self.ProfileNameInput)
+
+        self.label_8 = QLabel(self.ProfilePage)
+        self.label_8.setObjectName(u"label_8")
+
+        self.verticalLayout_10.addWidget(self.label_8)
+
+        self.ProfileFilenameInput = QLineEdit(self.ProfilePage)
+        self.ProfileFilenameInput.setObjectName(u"ProfileFilenameInput")
+
+        self.verticalLayout_10.addWidget(self.ProfileFilenameInput)
 
         self.label_2 = QLabel(self.ProfilePage)
         self.label_2.setObjectName(u"label_2")
@@ -304,6 +315,15 @@ class Ui_MainWindow(object):
         self.verticalSpacer_5 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
         self.verticalLayout_10.addItem(self.verticalSpacer_5)
+
+        self.horizontalLayout_19 = QHBoxLayout()
+        self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
+        self.horizontalSpacer_8 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_19.addItem(self.horizontalSpacer_8)
+
+
+        self.verticalLayout_10.addLayout(self.horizontalLayout_19)
 
         self.GameContentStackedWidget.addWidget(self.ProfilePage)
         self.FilesPage = QWidget()
@@ -1084,7 +1104,7 @@ class Ui_MainWindow(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 825, 510))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 583, 343))
         self.scrollAreaWidgetContents_3.setStyleSheet(u"")
         self.verticalLayout_13 = QVBoxLayout(self.scrollAreaWidgetContents_3)
         self.verticalLayout_13.setSpacing(6)
@@ -1255,7 +1275,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.setContentsMargins(8, 0, 8, 0)
         self.GameProfileComboBox = QComboBox(self.GamePlayFrame)
         self.GameProfileComboBox.addItem("")
-        self.GameProfileComboBox.addItem("")
         self.GameProfileComboBox.setObjectName(u"GameProfileComboBox")
         sizePolicy4 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         sizePolicy4.setHorizontalStretch(0)
@@ -1384,7 +1403,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.MainTabsStackedWidget.setCurrentIndex(1)
-        self.GameContentStackedWidget.setCurrentIndex(1)
+        self.GameContentStackedWidget.setCurrentIndex(0)
         self.tabWidget.setCurrentIndex(1)
         self.PlayerSkinInput.setCurrentIndex(0)
         self.PlayerColorInput.setCurrentIndex(0)
@@ -1421,7 +1440,8 @@ class Ui_MainWindow(object):
         self.HostGameTabButton.setText(QCoreApplication.translate("MainWindow", u"Host game", None))
         self.JoinGameTabButton.setText(QCoreApplication.translate("MainWindow", u"Join game", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"PROFILE NAME", None))
-        self.lineEdit.setText(QCoreApplication.translate("MainWindow", u"Default", None))
+        self.ProfileNameInput.setText(QCoreApplication.translate("MainWindow", u"Default", None))
+        self.label_8.setText(QCoreApplication.translate("MainWindow", u"FILENAME", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"GAME", None))
         self.ProfileGameSetting.setItemText(0, QCoreApplication.translate("MainWindow", u"SRB2", None))
         self.ProfileGameSetting.setItemText(1, QCoreApplication.translate("MainWindow", u"SRB2Kart", None))
@@ -1645,8 +1665,7 @@ class Ui_MainWindow(object):
         self.EditServerButton.setText(QCoreApplication.translate("MainWindow", u"Edit", None))
         self.DeleteServerButton.setText(QCoreApplication.translate("MainWindow", u"Delete", None))
         self.SaveButton.setTabText(self.SaveButton.indexOf(self.tab), QCoreApplication.translate("MainWindow", u"Saved Servers", None))
-        self.GameProfileComboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"Default", None))
-        self.GameProfileComboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"New profile...", None))
+        self.GameProfileComboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"New profile...", None))
 
         self.GamePlayButton.setText(QCoreApplication.translate("MainWindow", u"PLAY", None))
         self.GameOptionsDropDownButton.setText("")

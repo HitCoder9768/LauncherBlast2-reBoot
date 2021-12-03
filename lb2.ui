@@ -94,7 +94,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="launcherblast2.qrc">
+          <iconset resource="lb2.qrc">
            <normaloff>:/assets/img/icons/news.png</normaloff>:/assets/img/icons/news.png</iconset>
          </property>
          <property name="iconSize">
@@ -126,7 +126,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="launcherblast2.qrc">
+          <iconset resource="lb2.qrc">
            <normaloff>:/assets/img/icons/srb2.png</normaloff>:/assets/img/icons/srb2.png</iconset>
          </property>
          <property name="iconSize">
@@ -155,7 +155,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="launcherblast2.qrc">
+          <iconset resource="lb2.qrc">
            <normaloff>:/assets/img/icons/about.png</normaloff>:/assets/img/icons/about.png</iconset>
          </property>
          <property name="iconSize">
@@ -181,7 +181,7 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="launcherblast2.qrc">
+          <iconset resource="lb2.qrc">
            <normaloff>:/assets/img/icons/settings.png</normaloff>:/assets/img/icons/settings.png</iconset>
          </property>
          <property name="iconSize">
@@ -502,7 +502,7 @@
                   <item>
                    <widget class="QStackedWidget" name="GameContentStackedWidget">
                     <property name="currentIndex">
-                     <number>1</number>
+                     <number>0</number>
                     </property>
                     <widget class="QWidget" name="ProfilePage">
                      <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -514,11 +514,21 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLineEdit" name="lineEdit">
+                       <widget class="QLineEdit" name="ProfileNameInput">
                         <property name="text">
                          <string>Default</string>
                         </property>
                        </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_8">
+                        <property name="text">
+                         <string>FILENAME</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLineEdit" name="ProfileFilenameInput"/>
                       </item>
                       <item>
                        <widget class="QLabel" name="label_2">
@@ -583,47 +593,6 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLabel" name="label_5">
-                        <property name="text">
-                         <string>GAME PATH</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QFrame" name="frame_2">
-                        <property name="frameShape">
-                         <enum>QFrame::StyledPanel</enum>
-                        </property>
-                        <property name="frameShadow">
-                         <enum>QFrame::Raised</enum>
-                        </property>
-                        <layout class="QHBoxLayout" name="horizontalLayout_16">
-                         <property name="leftMargin">
-                          <number>0</number>
-                         </property>
-                         <property name="topMargin">
-                          <number>0</number>
-                         </property>
-                         <property name="rightMargin">
-                          <number>0</number>
-                         </property>
-                         <property name="bottomMargin">
-                          <number>0</number>
-                         </property>
-                         <item>
-                          <widget class="QLineEdit" name="ProfilePathInput"/>
-                         </item>
-                         <item>
-                          <widget class="QPushButton" name="ProfilePathBrowseButton">
-                           <property name="text">
-                            <string>Browse...</string>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
-                       </widget>
-                      </item>
-                      <item>
                        <spacer name="verticalSpacer_5">
                         <property name="orientation">
                          <enum>Qt::Vertical</enum>
@@ -635,6 +604,23 @@
                          </size>
                         </property>
                        </spacer>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="horizontalLayout_19">
+                        <item>
+                         <spacer name="horizontalSpacer_8">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>40</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                       </layout>
                       </item>
                      </layout>
                     </widget>
@@ -696,7 +682,7 @@
                               <string>place.wad</string>
                              </property>
                              <property name="icon">
-                              <iconset resource="launcherblast2.qrc">
+                              <iconset resource="lb2.qrc">
                                <normaloff>:/assets/img/filetypes/wad.png</normaloff>:/assets/img/filetypes/wad.png</iconset>
                              </property>
                             </item>
@@ -705,7 +691,7 @@
                               <string>hold.pk3</string>
                              </property>
                              <property name="icon">
-                              <iconset resource="launcherblast2.qrc">
+                              <iconset resource="lb2.qrc">
                                <normaloff>:/assets/img/filetypes/pk3.png</normaloff>:/assets/img/filetypes/pk3.png</iconset>
                              </property>
                             </item>
@@ -714,7 +700,7 @@
                               <string>er.lua</string>
                              </property>
                              <property name="icon">
-                              <iconset resource="launcherblast2.qrc">
+                              <iconset resource="lb2.qrc">
                                <normaloff>:/assets/img/filetypes/lua.png</normaloff>:/assets/img/filetypes/lua.png</iconset>
                              </property>
                             </item>
@@ -759,7 +745,7 @@
                                 <string/>
                                </property>
                                <property name="icon">
-                                <iconset resource="launcherblast2.qrc">
+                                <iconset resource="lb2.qrc">
                                  <normaloff>:/assets/img/uparrow.png</normaloff>:/assets/img/uparrow.png</iconset>
                                </property>
                               </widget>
@@ -856,7 +842,7 @@
                                 <string/>
                                </property>
                                <property name="icon">
-                                <iconset resource="launcherblast2.qrc">
+                                <iconset resource="lb2.qrc">
                                  <normaloff>:/assets/img/combobox-dropdown.png</normaloff>:/assets/img/combobox-dropdown.png</iconset>
                                </property>
                               </widget>
@@ -1237,7 +1223,7 @@
                      </layout>
                     </widget>
                     <widget class="QWidget" name="GameSettingsPage">
-                     <layout class="QVBoxLayout" name="verticalLayout_6">
+                     <layout class="QVBoxLayout" name="verticalLayout_27">
                       <item>
                        <widget class="QLabel" name="GameResolutionLabel">
                         <property name="maximumSize">
@@ -1458,6 +1444,19 @@ font-size: 12pt;</string>
                        </widget>
                       </item>
                       <item>
+                       <widget class="QCheckBox" name="WineToggle">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                        <property name="text">
+                         <string>RUN SRB2 IN WINE</string>
+                        </property>
+                        <property name="checked">
+                         <bool>false</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
                        <widget class="QLabel" name="GameArgsLabel">
                         <property name="text">
                          <string>CUSTOM CLI PARAMETERS</string>
@@ -1658,7 +1657,7 @@ font-size: 12pt;</string>
                                <string/>
                               </property>
                               <property name="pixmap">
-                               <pixmap resource="launcherblast2.qrc">:/assets/img/sonic.png</pixmap>
+                               <pixmap resource="lb2.qrc">:/assets/img/sonic.png</pixmap>
                               </property>
                               <property name="scaledContents">
                                <bool>true</bool>
@@ -2487,8 +2486,8 @@ font-size: 12pt;</string>
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>825</width>
-                           <height>510</height>
+                           <width>583</width>
+                           <height>343</height>
                           </rect>
                          </property>
                          <property name="styleSheet">
@@ -2815,11 +2814,6 @@ font-size: 12pt;</string>
                 </property>
                 <item>
                  <property name="text">
-                  <string>Default</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
                   <string>New profile...</string>
                  </property>
                 </item>
@@ -3044,11 +3038,32 @@ p, li { white-space: pre-wrap; }
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>255</width>
-                <height>130</height>
+                <width>994</width>
+                <height>574</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_18">
+               <item>
+                <widget class="QLabel" name="ProfileDirLabel">
+                 <property name="text">
+                  <string>PROFILE DIRECTORY</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_21">
+                 <item>
+                  <widget class="QLineEdit" name="lineEdit"/>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="ProfileDirBrowseButton">
+                   <property name="text">
+                    <string>Browse</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
                <item>
                 <widget class="QLabel" name="label_4">
                  <property name="text">
@@ -3077,19 +3092,6 @@ p, li { white-space: pre-wrap; }
                 <widget class="QCheckBox" name="SaveFilesToConfigToggle">
                  <property name="text">
                   <string>CLEAR FILES LIST ON STARTUP</string>
-                 </property>
-                 <property name="checked">
-                  <bool>false</bool>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="WineToggle">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="text">
-                  <string>RUN SRB2 IN WINE</string>
                  </property>
                  <property name="checked">
                   <bool>false</bool>
@@ -3131,7 +3133,8 @@ p, li { white-space: pre-wrap; }
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="launcherblast2.qrc"/>
+  <include location="lb2.qrc"/>
+  <include location="lb2.qrc"/>
  </resources>
  <connections/>
 </ui>
