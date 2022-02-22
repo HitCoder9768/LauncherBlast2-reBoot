@@ -1,5 +1,15 @@
 LauncherBlast2Conf.json
-
+LauncherBlast2_settings.toml
+default_profile.toml
+lb2ServerList.json
+venv/
+.vscode/
+.qt_for_python/
+.idea/
+__pycache__/
+modding/__pycache__/
+networking/__pycache__/
+SRB2/
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python

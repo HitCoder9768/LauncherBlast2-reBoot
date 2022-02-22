@@ -1,7 +1,7 @@
 import fix_qt_import_error
-import sys, os, PyQt5.QtWidgets, json, feedparser
-from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
-from EditServerUI import *
+import sys, os, PySide6.QtWidgets, json, feedparser
+from PySide6.QtWidgets import QMainWindow, QApplication, QFileDialog
+from edit_server_ui import *
 
 class ChildWindow(QMainWindow):
     def __init__(self, parentWindow, name, ip, createnew):
@@ -17,8 +17,8 @@ class ChildWindow(QMainWindow):
     
     def returnAndClose(self):
         if(self.createNew):
-            self.parentWindow.addServerToList(self.ui.ServerNameInput.text(),self.ui.ServerAddressInput.text())
+            self.parentWindow.add_server_to_list(self.ui.ServerNameInput.text(), self.ui.ServerAddressInput.text())
         else:
-            self.parentWindow.editSelectedServer(self.ui.ServerNameInput.text(),self.ui.ServerAddressInput.text())
+            self.parentWindow.edit_selected_server(self.ui.ServerNameInput.text(), self.ui.ServerAddressInput.text())
         self.close()
         return
