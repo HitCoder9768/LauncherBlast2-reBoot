@@ -188,6 +188,195 @@ QComboBox:hover{
 QTextEdit{
 	color: #ffffff;
 }"""
+themes["dracula"] = """
+/* dock at top */
+#DockTabFrame{
+	background-color: #1c1a22;
+	border-color: #282a36;
+}
+
+/* bottom play button panel */
+#GamePlayFrame{
+	background-color: #1c1a22;
+}
+
+/* stacked widget */
+QStackedWidget>QWidget{
+	background-color: #282a36;
+}
+
+/* list widget */
+QListWidget{
+	background-color: transparent;
+	color: #f8f8f2;
+}
+
+/* scroll bars */
+QScrollBar:vertical{
+	background-color: #1e1f29;
+}
+
+QScrollBar::sub-page, QScrollBar::add-page{
+	background: #44475a;
+}
+
+QScrollBar::handle{
+	background-color: #6f629e;
+}
+
+QScrollBar::handle:hover{
+	background-color: #bd93f9;
+}
+
+QScrollBar::handle:pressed{
+	background-color: #bd93f9;
+}
+
+/* main tabs frame */
+QWidget#MainTabsFrame{
+	background-color: #1c1a22;
+}
+
+/* radio buttons for the sidebar */
+QRadioButton{
+	color: #f8f8f2;
+}
+
+QRadioButton:hover, QRadioButton:checked:hover{
+	background-color: #44475a;
+}
+
+QRadioButton:checked{
+	background-color: #44475a;
+}
+
+QRadioButton::indicator{
+	background-color: transparent;
+}
+
+QRadioButton::indicator:checked{
+	background-color: #bd93f9;
+}
+
+/* radio buttons for dock bar tabs */
+#DockTabFrame QRadioButton::checked{
+	background-color: #282a36;
+	border-color: #bd93f9;
+}
+
+/* q splitter */
+QSplitter::handle{
+	background-color: #44475a;
+}
+
+/* text elementsss */
+
+QLabel, QCheckBox{
+	color: #f8f8f2;
+	background-color: transparent;
+}
+
+/* Buttons */
+QPushButton{
+    font-family: "Segoe UI";
+	background-color: #bd93f9;
+	color: #f8f8f2;
+}
+
+QPushButton:hover{
+background-color: #c69dff;
+}
+
+QPushButton:pressed{
+background-color: #bc8ffa;
+}
+
+QPushButton:!enabled{
+	background-color: #44475a;
+	color: #6272a4;
+}
+
+/* CheckBoxes */
+QCheckBox::indicator{
+	background-color: #f8f8f2;
+	border-color: #282a36;
+}
+
+QCheckBox::indicator:hover{
+	border-color: #393c4d;
+}
+
+QCheckBox::indicator:checked:hover{
+	border-color: #c69dff;
+}
+
+QCheckBox::indicator:checked{
+	border-color: #bd93f9;
+}
+
+QCheckBox::indicator:pressed, QCheckBox::indicator:checked:pressed{
+	background-color: #aaaaaa;
+}
+
+QCheckBox:disabled{
+	color: #cccccc;
+}
+
+QCheckBox::indicator:disabled{
+	border-color: #2b2b2b;
+	background-color: #cccccc;
+}
+
+/* scroll area background */
+QScrollArea>QWidget>QWidget{
+	background-color: #44475a;
+}
+
+QTabBar::tab{
+	color: #bebebe;
+}
+
+QTabBar::tab:hover{
+	color: #f8f8f2;
+	background-color: #44475a;
+}
+
+QTabBar::tab:selected{
+	color: #f8f8f2;
+	border-color: #bd93f9;
+}
+
+QTabWidget::pane{
+	background-color: #44475a;
+}
+
+/* content frames */
+#GamePageContentFrame>QWidget>QWidget{
+	background-color: #44475a;
+}
+
+QTabWidget>QWidget>QWidget{
+	background-color: #44475a;
+}
+
+/* Combobox, line edit */
+
+QLineEdit, QComboBox{
+	background-color: #282a36;
+	color: #f8f8f2;
+}
+
+QComboBox::drop-down{
+	image: url(:/assets/img/combobox-dropdown.png);
+}
+
+QComboBox:hover{
+	background-color: #1e1f29;
+}
+
+QTextEdit{
+	color: #f8f8f2;
+}"""
 themes["light"] = """
 /* stacked widget */
 QStackedWidget>QWidget{
