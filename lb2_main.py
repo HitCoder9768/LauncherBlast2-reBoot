@@ -141,7 +141,7 @@ class MainWindow(QMainWindow):
         self.ui.JoinGameTabButton.clicked.connect(lambda: self.change_game_tab(5))
 
         # profile page buttons ======================================================= #
-        self.ui.ProfilePathBrowseButton.clicked.connect(self.set_game_path)
+        self.ui.ProfileDirBrowseButton.clicked.connect(self.set_game_path)
 
         # files list buttons ========================================================= #
         self.ui.GameFilesClearButton.clicked.connect(self.clear_files_list)

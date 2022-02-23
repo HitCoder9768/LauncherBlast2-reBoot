@@ -267,8 +267,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>184</width>
-                <height>36</height>
+                <width>190</width>
+                <height>42</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -367,6 +367,21 @@
                   <enum>QFrame::Raised</enum>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_2">
+                  <property name="spacing">
+                   <number>0</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
                   <item>
                    <widget class="QRadioButton" name="ProfileTabButton">
                     <property name="minimumSize">
@@ -2069,8 +2084,8 @@ font-size: 12pt;</string>
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>334</width>
-                           <height>702</height>
+                           <width>324</width>
+                           <height>686</height>
                           </rect>
                          </property>
                          <layout class="QVBoxLayout" name="verticalLayout_16">
@@ -2486,8 +2501,8 @@ font-size: 12pt;</string>
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>583</width>
-                           <height>343</height>
+                           <width>587</width>
+                           <height>330</height>
                           </rect>
                          </property>
                          <property name="styleSheet">
@@ -2934,8 +2949,8 @@ font-size: 12pt;</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>87</width>
-                <height>87</height>
+                <width>98</width>
+                <height>78</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_19">
@@ -3038,8 +3053,8 @@ p, li { white-space: pre-wrap; }
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>994</width>
-                <height>574</height>
+                <width>261</width>
+                <height>172</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_18">

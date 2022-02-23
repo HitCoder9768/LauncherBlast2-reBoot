@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'lb2.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.2.1
+## Created by: Qt User Interface Compiler version 6.2.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -130,7 +130,7 @@ class Ui_MainWindow(object):
         self.NewsScrollArea.setWidgetResizable(True)
         self.NewsScrollAreaContent = QWidget()
         self.NewsScrollAreaContent.setObjectName(u"NewsScrollAreaContent")
-        self.NewsScrollAreaContent.setGeometry(QRect(0, 0, 184, 36))
+        self.NewsScrollAreaContent.setGeometry(QRect(0, 0, 190, 42))
         self.NewsScrollAreaContent.setStyleSheet(u"")
         self.verticalLayout_20 = QVBoxLayout(self.NewsScrollAreaContent)
         self.verticalLayout_20.setObjectName(u"verticalLayout_20")
@@ -173,7 +173,9 @@ class Ui_MainWindow(object):
         self.GamePageTabsFrame.setFrameShape(QFrame.StyledPanel)
         self.GamePageTabsFrame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_2 = QVBoxLayout(self.GamePageTabsFrame)
+        self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.ProfileTabButton = QRadioButton(self.GamePageTabsFrame)
         self.ProfileTabButton.setObjectName(u"ProfileTabButton")
         self.ProfileTabButton.setMinimumSize(QSize(0, 36))
@@ -285,31 +287,6 @@ class Ui_MainWindow(object):
         self.ProfileVersionSetting.setObjectName(u"ProfileVersionSetting")
 
         self.verticalLayout_10.addWidget(self.ProfileVersionSetting)
-
-        self.label_5 = QLabel(self.ProfilePage)
-        self.label_5.setObjectName(u"label_5")
-
-        self.verticalLayout_10.addWidget(self.label_5)
-
-        self.frame_2 = QFrame(self.ProfilePage)
-        self.frame_2.setObjectName(u"frame_2")
-        self.frame_2.setFrameShape(QFrame.StyledPanel)
-        self.frame_2.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_16 = QHBoxLayout(self.frame_2)
-        self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
-        self.horizontalLayout_16.setContentsMargins(0, 0, 0, 0)
-        self.ProfilePathInput = QLineEdit(self.frame_2)
-        self.ProfilePathInput.setObjectName(u"ProfilePathInput")
-
-        self.horizontalLayout_16.addWidget(self.ProfilePathInput)
-
-        self.ProfilePathBrowseButton = QPushButton(self.frame_2)
-        self.ProfilePathBrowseButton.setObjectName(u"ProfilePathBrowseButton")
-
-        self.horizontalLayout_16.addWidget(self.ProfilePathBrowseButton)
-
-
-        self.verticalLayout_10.addWidget(self.frame_2)
 
         self.verticalSpacer_5 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
@@ -608,14 +585,14 @@ class Ui_MainWindow(object):
         self.GameContentStackedWidget.addWidget(self.FilesPage)
         self.GameSettingsPage = QWidget()
         self.GameSettingsPage.setObjectName(u"GameSettingsPage")
-        self.verticalLayout_6 = QVBoxLayout(self.GameSettingsPage)
-        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.verticalLayout_27 = QVBoxLayout(self.GameSettingsPage)
+        self.verticalLayout_27.setObjectName(u"verticalLayout_27")
         self.GameResolutionLabel = QLabel(self.GameSettingsPage)
         self.GameResolutionLabel.setObjectName(u"GameResolutionLabel")
         self.GameResolutionLabel.setMaximumSize(QSize(16777215, 26))
         self.GameResolutionLabel.setStyleSheet(u"")
 
-        self.verticalLayout_6.addWidget(self.GameResolutionLabel)
+        self.verticalLayout_27.addWidget(self.GameResolutionLabel)
 
         self.GameResolutionSettingsWrapper = QFrame(self.GameSettingsPage)
         self.GameResolutionSettingsWrapper.setObjectName(u"GameResolutionSettingsWrapper")
@@ -647,19 +624,19 @@ class Ui_MainWindow(object):
         self.gridLayout_3.addWidget(self.GameVerticalResolutionInput, 0, 2, 1, 1)
 
 
-        self.verticalLayout_6.addWidget(self.GameResolutionSettingsWrapper)
+        self.verticalLayout_27.addWidget(self.GameResolutionSettingsWrapper)
 
         self.GameRenderCfgLabel = QLabel(self.GameSettingsPage)
         self.GameRenderCfgLabel.setObjectName(u"GameRenderCfgLabel")
 
-        self.verticalLayout_6.addWidget(self.GameRenderCfgLabel)
+        self.verticalLayout_27.addWidget(self.GameRenderCfgLabel)
 
         self.GameRendererSetting = QComboBox(self.GameSettingsPage)
         self.GameRendererSetting.addItem("")
         self.GameRendererSetting.addItem("")
         self.GameRendererSetting.setObjectName(u"GameRendererSetting")
 
-        self.verticalLayout_6.addWidget(self.GameRendererSetting)
+        self.verticalLayout_27.addWidget(self.GameRendererSetting)
 
         self.GameFullscreenSetting = QComboBox(self.GameSettingsPage)
         self.GameFullscreenSetting.addItem("")
@@ -667,12 +644,12 @@ class Ui_MainWindow(object):
         self.GameFullscreenSetting.addItem("")
         self.GameFullscreenSetting.setObjectName(u"GameFullscreenSetting")
 
-        self.verticalLayout_6.addWidget(self.GameFullscreenSetting)
+        self.verticalLayout_27.addWidget(self.GameFullscreenSetting)
 
         self.GameSoundOptionsLabel = QLabel(self.GameSettingsPage)
         self.GameSoundOptionsLabel.setObjectName(u"GameSoundOptionsLabel")
 
-        self.verticalLayout_6.addWidget(self.GameSoundOptionsLabel)
+        self.verticalLayout_27.addWidget(self.GameSoundOptionsLabel)
 
         self.GameMusicSetting = QComboBox(self.GameSettingsPage)
         self.GameMusicSetting.addItem("")
@@ -681,19 +658,19 @@ class Ui_MainWindow(object):
         self.GameMusicSetting.addItem("")
         self.GameMusicSetting.setObjectName(u"GameMusicSetting")
 
-        self.verticalLayout_6.addWidget(self.GameMusicSetting)
+        self.verticalLayout_27.addWidget(self.GameMusicSetting)
 
         self.GameSoundSetting = QComboBox(self.GameSettingsPage)
         self.GameSoundSetting.addItem("")
         self.GameSoundSetting.addItem("")
         self.GameSoundSetting.setObjectName(u"GameSoundSetting")
 
-        self.verticalLayout_6.addWidget(self.GameSoundSetting)
+        self.verticalLayout_27.addWidget(self.GameSoundSetting)
 
         self.GameExecPathLabel = QLabel(self.GameSettingsPage)
         self.GameExecPathLabel.setObjectName(u"GameExecPathLabel")
 
-        self.verticalLayout_6.addWidget(self.GameExecPathLabel)
+        self.verticalLayout_27.addWidget(self.GameExecPathLabel)
 
         self.GameExecFilePath = QFrame(self.GameSettingsPage)
         self.GameExecFilePath.setObjectName(u"GameExecFilePath")
@@ -714,21 +691,28 @@ class Ui_MainWindow(object):
         self.gridLayout_4.addWidget(self.GameExecFilePathBrowse, 0, 1, 1, 1)
 
 
-        self.verticalLayout_6.addWidget(self.GameExecFilePath)
+        self.verticalLayout_27.addWidget(self.GameExecFilePath)
+
+        self.WineToggle = QCheckBox(self.GameSettingsPage)
+        self.WineToggle.setObjectName(u"WineToggle")
+        self.WineToggle.setEnabled(False)
+        self.WineToggle.setChecked(False)
+
+        self.verticalLayout_27.addWidget(self.WineToggle)
 
         self.GameArgsLabel = QLabel(self.GameSettingsPage)
         self.GameArgsLabel.setObjectName(u"GameArgsLabel")
 
-        self.verticalLayout_6.addWidget(self.GameArgsLabel)
+        self.verticalLayout_27.addWidget(self.GameArgsLabel)
 
         self.GameArgsInput = QLineEdit(self.GameSettingsPage)
         self.GameArgsInput.setObjectName(u"GameArgsInput")
 
-        self.verticalLayout_6.addWidget(self.GameArgsInput)
+        self.verticalLayout_27.addWidget(self.GameArgsInput)
 
         self.verticalSpacer_2 = QSpacerItem(20, 9, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
-        self.verticalLayout_6.addItem(self.verticalSpacer_2)
+        self.verticalLayout_27.addItem(self.verticalSpacer_2)
 
         self.GameContentStackedWidget.addWidget(self.GameSettingsPage)
         self.PlayerSetupPage = QWidget()
@@ -906,7 +890,7 @@ class Ui_MainWindow(object):
         self.scrollArea_4.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 334, 702))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 324, 686))
         self.verticalLayout_16 = QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_16.setObjectName(u"verticalLayout_16")
         self.verticalLayout_16.setContentsMargins(9, 9, 9, 9)
@@ -1103,7 +1087,7 @@ class Ui_MainWindow(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 583, 343))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 587, 330))
         self.scrollAreaWidgetContents_3.setStyleSheet(u"")
         self.verticalLayout_13 = QVBoxLayout(self.scrollAreaWidgetContents_3)
         self.verticalLayout_13.setSpacing(6)
@@ -1325,7 +1309,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 87, 87))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 98, 78))
         self.verticalLayout_19 = QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_19.setSpacing(0)
         self.verticalLayout_19.setObjectName(u"verticalLayout_19")
@@ -1353,9 +1337,29 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 255, 130))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 261, 172))
         self.verticalLayout_18 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_18.setObjectName(u"verticalLayout_18")
+        self.ProfileDirLabel = QLabel(self.scrollAreaWidgetContents)
+        self.ProfileDirLabel.setObjectName(u"ProfileDirLabel")
+
+        self.verticalLayout_18.addWidget(self.ProfileDirLabel)
+
+        self.horizontalLayout_21 = QHBoxLayout()
+        self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
+        self.lineEdit = QLineEdit(self.scrollAreaWidgetContents)
+        self.lineEdit.setObjectName(u"lineEdit")
+
+        self.horizontalLayout_21.addWidget(self.lineEdit)
+
+        self.ProfileDirBrowseButton = QPushButton(self.scrollAreaWidgetContents)
+        self.ProfileDirBrowseButton.setObjectName(u"ProfileDirBrowseButton")
+
+        self.horizontalLayout_21.addWidget(self.ProfileDirBrowseButton)
+
+
+        self.verticalLayout_18.addLayout(self.horizontalLayout_21)
+
         self.label_4 = QLabel(self.scrollAreaWidgetContents)
         self.label_4.setObjectName(u"label_4")
 
@@ -1374,13 +1378,6 @@ class Ui_MainWindow(object):
         self.SaveFilesToConfigToggle.setChecked(False)
 
         self.verticalLayout_18.addWidget(self.SaveFilesToConfigToggle)
-
-        self.WineToggle = QCheckBox(self.scrollAreaWidgetContents)
-        self.WineToggle.setObjectName(u"WineToggle")
-        self.WineToggle.setEnabled(False)
-        self.WineToggle.setChecked(False)
-
-        self.verticalLayout_18.addWidget(self.WineToggle)
 
         self.verticalSpacer_6 = QSpacerItem(20, 244, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
@@ -1453,8 +1450,6 @@ class Ui_MainWindow(object):
         self.ProfileVersionSetting.setItemText(4, QCoreApplication.translate("MainWindow", u"1.08", None))
         self.ProfileVersionSetting.setItemText(5, QCoreApplication.translate("MainWindow", u"1.07", None))
 
-        self.label_5.setText(QCoreApplication.translate("MainWindow", u"GAME PATH", None))
-        self.ProfilePathBrowseButton.setText(QCoreApplication.translate("MainWindow", u"Browse...", None))
 
         __sortingEnabled = self.GameFilesList.isSortingEnabled()
         self.GameFilesList.setSortingEnabled(False)
@@ -1513,6 +1508,7 @@ class Ui_MainWindow(object):
         self.GameExecPathLabel.setText(QCoreApplication.translate("MainWindow", u"EXE PATH", None))
         self.GameExecFilePathInput.setText(QCoreApplication.translate("MainWindow", u"srb2win.exe", None))
         self.GameExecFilePathBrowse.setText(QCoreApplication.translate("MainWindow", u"Browse...", None))
+        self.WineToggle.setText(QCoreApplication.translate("MainWindow", u"RUN SRB2 IN WINE", None))
         self.GameArgsLabel.setText(QCoreApplication.translate("MainWindow", u"CUSTOM CLI PARAMETERS", None))
         self.PlayerNameTitleLabel.setText(QCoreApplication.translate("MainWindow", u"NICKNAME", None))
         self.PlayerNameInput.setText("")
@@ -1717,11 +1713,12 @@ class Ui_MainWindow(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'MS Shell Dlg 2'; font-size:8pt;\">In case you didn't already notice, the design is very much inspired by the 2019 Minecraft Launcher. It was actually that which kick-started me into creating this. Anyway, hope you enjoy it, if you find any bugs let me know! I'll be working on this from time to time regardless, so updates may come soon. I'm not implementing an auto-updater though, as I don't have a server to place the metadata on for"
                         " now.</span></p></body></html>", None))
+        self.ProfileDirLabel.setText(QCoreApplication.translate("MainWindow", u"PROFILE DIRECTORY", None))
+        self.ProfileDirBrowseButton.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.label_4.setText(QCoreApplication.translate("MainWindow", u"LAUNCHER THEME (REQUIRES RESTART)", None))
         self.LauncherThemeInput.setItemText(0, QCoreApplication.translate("MainWindow", u"Dark", None))
         self.LauncherThemeInput.setItemText(1, QCoreApplication.translate("MainWindow", u"Light", None))
 
         self.SaveFilesToConfigToggle.setText(QCoreApplication.translate("MainWindow", u"CLEAR FILES LIST ON STARTUP", None))
-        self.WineToggle.setText(QCoreApplication.translate("MainWindow", u"RUN SRB2 IN WINE", None))
     # retranslateUi
 
