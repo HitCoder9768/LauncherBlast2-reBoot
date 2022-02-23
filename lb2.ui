@@ -621,6 +621,13 @@
                        </spacer>
                       </item>
                       <item>
+                       <widget class="QPushButton" name="DeleteProfileButton">
+                        <property name="text">
+                         <string>Delete Profile</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
                        <layout class="QHBoxLayout" name="horizontalLayout_19">
                         <item>
                          <spacer name="horizontalSpacer_8">
@@ -659,7 +666,7 @@
                       <item>
                        <widget class="QTabWidget" name="tabWidget">
                         <property name="currentIndex">
-                         <number>1</number>
+                         <number>0</number>
                         </property>
                         <widget class="QWidget" name="tab_3">
                          <attribute name="title">
@@ -2084,7 +2091,7 @@ font-size: 12pt;</string>
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>324</width>
+                           <width>859</width>
                            <height>686</height>
                           </rect>
                          </property>
@@ -2501,8 +2508,8 @@ font-size: 12pt;</string>
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>587</width>
-                           <height>330</height>
+                           <width>859</width>
+                           <height>516</height>
                           </rect>
                          </property>
                          <property name="styleSheet">
@@ -2949,8 +2956,8 @@ font-size: 12pt;</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>98</width>
-                <height>78</height>
+                <width>998</width>
+                <height>576</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_19">
