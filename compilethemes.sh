@@ -9,6 +9,7 @@ FILES=$(find qss/*.qss)
 
 for f in $FILES
 do
-    echo "themes[\"${basename $f .qss}\"] = \"\"\"" >> qss/themes.py
+    echo "themes[\"$(basename $f .qss)\"] = \"\"\"" >> qss/themes.py
+    cat $f >> qss/themes.py
     echo "\"\"\"" >> qss/themes.py
 done

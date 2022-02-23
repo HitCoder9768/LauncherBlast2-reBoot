@@ -951,19 +951,18 @@ class MainWindow(QMainWindow):
         # set up the launcher theme
         chosentheme = ""
         if not self.current_profile_settings:
-            chosentheme = "dark"
+            self.setStyleSheet(themes.themes["main"] + themes.themes["dark"])
             return
 
         # This is much cleaner than using if elseif elseif :vomit:
         themeKeys = ["dark", "light", "blue", "orange", "red", "pink", "lightsout", "dracula", "nord"]
-        chosentheme = themes.getTheme(themeKeys[self.current_profile_settings["settings"]["theme"]])
+        chosentheme = themes.themes[themeKeys[self.current_profile_settings["settings"]["theme"]]]
 
         # april fools day stuff. pls dont spoil for others!11!1
         if (fool):
-            chosentheme = themes.getTheme("pink")
+            chosentheme = themes.themes["pink"]
 
-        self.setStyleSheet(themes.getTheme("main") + chosentheme)
-        self.ensurePolished()
+        self.setStyleSheet(themes.themes["main"] + chosentheme)
         print("tried to load theme")
         return
 
