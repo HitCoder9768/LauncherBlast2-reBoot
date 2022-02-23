@@ -1,0 +1,183 @@
+/* base widgets */
+QWidget{
+	border: 0;
+}
+
+QScrollArea{
+	border: 0;
+}
+
+/* list widget */
+QListWidget{
+	border: 0;
+	font-family: "Segoe UI";
+	font-size: 12pt;
+}
+
+QListWidget::item{
+	padding: 2px;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+
+/* scroll bars */
+QScrollBar:vertical{
+	width: 8px;
+	margin: 1px;
+}
+
+/* radio buttons for the sidebar */
+
+QRadioButton{
+	font-family: "Segoe UI";
+	font-size: 12pt;
+	font: bold;
+	height: 32px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-right: 16px;
+}
+
+QRadioButton::icon{
+	margin-right: 2px;
+}
+
+QRadioButton::indicator{
+	width: 4px;
+	height: 32px;
+}
+
+/* top dock */
+#DockTabFrame{
+	border-bottom: 1px solid transparent;
+}
+
+/* radio buttons for main tabs */
+#DockTabFrame QRadioButton{
+	font-family: "Segoe UI";
+	font-size: 12pt;
+	font: bold;
+	height: 48px;
+	padding-top: 2px;
+	padding-bottom: 0;
+	padding-right: 0;
+	border-top: 4px solid transparent;
+}
+
+#DockTabFrame QRadioButton::icon{
+	margin: 0;
+}
+
+#DockTabFrame QRadioButton::indicator{
+	width: 0;
+}
+
+/* text elementsss */
+QLabel, QCheckBox{
+	font: bold 10pt;
+	font-family: "Segoe UI";
+	padding-left: 0px;
+	padding-top: 6px;
+	max-height: 20px;
+}
+
+QLabel#PlayerSkinInfoText{
+	font: bold 10pt;
+	padding: 0;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+QLabel#GamePlayGraphicLabel{
+	max-height: 999999px;
+	padding: 0;
+}
+
+#PlayerSkinInfoWrapper QLabel{
+	padding: 0;
+	margin: 4px;
+	max-height: 999999px;
+}
+
+QStackedWidget>QWidget>QLabel{
+	padding-left: 0;
+}
+
+/* Buttons */
+
+QPushButton{
+    font-family: "Segoe UI";
+	font-size: 10pt;
+	padding-left: 8px;
+	padding-right: 8px;
+	border: 0;
+	min-height: 28px;
+}
+
+QPushButton#GamePlayButton{
+	font: bold;
+	font-size: 12pt;
+	padding-left: 8px;
+	padding-right: 8px;
+	min-height: 38px;
+}
+
+/* CheckBoxes */
+
+QCheckBox::indicator{
+	border: 3px solid;
+	border-right-width: 16px;
+	width: 13px;
+	height: 12px;
+}
+
+QCheckBox::indicator:checked{
+	border-right-width: 3px;
+	border-left-width: 16px;
+}
+
+/* scroll area background */
+QScrollArea>QWidget>QWidget{
+	border: none;
+}
+
+/* Tabs */
+
+QTabWidget::tab-bar{
+	left: 16px;
+}
+
+QTabBar::tab{
+	font-size: 12pt;
+	border-bottom: 2px solid transparent;
+	height: 28px;
+	width: 128px;
+}
+
+QTabBar::tab:selected{
+	font: bold;
+}
+
+QTabWidget::pane{
+	border: none;
+}
+
+/* Combobox, line edit */
+QLineEdit, QComboBox{
+	font-family: "Segoe UI";
+	font-size: 12pt;
+	border-radius: 4px;
+	height: 24px;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-bottom: 4px;
+}
+
+QComboBox::drop-down{
+	border: 0;
+	margin: 6px;
+}
+
+QTextEdit{
+	background-color: transparent;
+}

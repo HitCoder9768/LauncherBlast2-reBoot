@@ -2,3 +2,4 @@ requests~=2.26.0
 PySide6~=6.2.1
 feedparser~=6.0.8
 toml
+lxml

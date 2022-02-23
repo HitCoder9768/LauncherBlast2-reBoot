@@ -1,0 +1,170 @@
+/* stacked widget */
+QStackedWidget>QWidget{
+	background-color: #C23657;
+}
+
+/* list widget */
+QListWidget{
+	background-color: transparent;
+	color: #FFE0F0;
+}
+
+/* scroll bars */
+QScrollBar:vertical{
+	background-color: #282828;
+}
+
+QScrollBar::sub-page, QScrollBar::add-page{
+	background: #D33C67;
+}
+
+QScrollBar::handle{
+	background-color: #acacac;
+}
+
+QScrollBar::handle:hover{
+	background-color: #FFB8F8;
+}
+
+QScrollBar::handle:pressed{
+	background-color: #AC2D40;
+}
+
+/* main tabs frame */
+QWidget#MainTabsFrame{
+	background-color: #B53049;
+}
+
+/* radio buttons for the sidebar */
+QRadioButton{
+	color: #FFE0F0;
+}
+
+QRadioButton:hover, QRadioButton:checked:hover{
+	background-color: #383838;
+}
+
+QRadioButton:checked{
+	background-color: #B73574;
+}
+
+QRadioButton::indicator{
+	background-color: transparent;
+}
+
+QRadioButton::indicator:checked{
+	background-color: #E021C6;
+}
+
+/* q splitter */
+QSplitter::handle{
+	background-color: #AC2D40;
+}
+
+/* text elementsss */
+
+QLabel, QCheckBox{
+	color: #FFE0F0;
+	background-color: transparent;
+}
+
+/* Buttons */
+QPushButton{
+    font-family: "Segoe UI";
+	background-color: #E24CCE;
+	color: #FFE0F0;
+}
+
+QPushButton:hover{
+background-color: #E650E6;
+}
+
+QPushButton:pressed{
+background-color: #C543C3;
+}
+
+QPushButton:!enabled{
+	background-color:#616161;
+	color: #cfcfcf;
+}
+
+/* CheckBoxes */
+QCheckBox::indicator{
+	background-color: #FFE0F0;
+	border-color: #AC2D40;
+}
+
+QCheckBox::indicator:hover{
+	border-color: #282828;
+}
+
+QCheckBox::indicator:checked:hover{
+	border-color: #4c6fff;
+}
+
+QCheckBox::indicator:checked{
+	border-color: #3c64ff;
+}
+
+QCheckBox::indicator:pressed, QCheckBox::indicator:checked:pressed{
+	background-color: #aaaaaa;
+}
+
+QCheckBox:disabled{
+	color: #cccccc;
+}
+
+QCheckBox::indicator:disabled{
+	border-color: #C23657;
+	background-color: #cccccc;
+}
+
+/* scroll area background */
+QScrollArea>QWidget>QWidget{
+	background-color: #D33C67;
+}
+
+QTabBar::tab{
+	color: #FFB8F8;
+}
+
+QTabBar::tab:hover{
+	color: #FFE0F0;
+	background-color: #E0479B;
+}
+
+QTabBar::tab:selected{
+	color: #FFE0F0;
+	border-bottom-color: #E021C6;
+}
+
+QTabWidget::pane{
+	background-color: #D33C67;
+}
+
+QTabWidget>QWidget>QWidget{
+	background-color: #D33C67;
+}
+
+/* Combobox, line edit */
+
+QLineEdit, QComboBox{
+	background-color: #AC2D40;
+	color: #FFE0F0;
+}
+
+QComboBox::drop-down{
+	image: url(:/assets/img/combobox-dropdown.png);
+}
+
+QComboBox:hover{
+	background-color: #282828;
+}
+
+#DockTabFrame{
+	background-color: #6C1D40;
+}
+
+#GamePlayFrame{
+	background-color: #6C1D40;
+}

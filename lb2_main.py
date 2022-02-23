@@ -949,30 +949,22 @@ class MainWindow(QMainWindow):
 
     def apply_style(self):
         # set up the launcher theme
+        chosentheme = ""
         if not self.current_profile_settings:
-            self.setStyleSheet(themes.main + themes.dark)
+            chosentheme = "dark"
             return
 
-        if self.current_profile_settings["settings"]["theme"] == 0: 
-            chosentheme = themes.dark
-        if self.current_profile_settings["settings"]["theme"] == 1: 
-            chosentheme = themes.light
-        if self.current_profile_settings["settings"]["theme"] == 2: 
-            chosentheme = themes.blue
-        if self.current_profile_settings["settings"]["theme"] == 3: 
-            chosentheme = themes.orange
-        if self.current_profile_settings["settings"]["theme"] == 4: 
-            chosentheme = themes.red
-        if self.current_profile_settings["settings"]["theme"] == 5: 
-            chosentheme = themes.pink
-        if self.current_profile_settings["settings"]["theme"] == 6: 
-            chosentheme = themes.lightsout
+        # This is much cleaner than using if elseif elseif :vomit:
+        themeKeys = ["dark", "light", "blue", "orange", "red", "pink", "lightsout", "dracula", "nord"]
+        chosentheme = themes.getTheme(themeKeys[self.current_profile_settings["settings"]["theme"]])
 
         # april fools day stuff. pls dont spoil for others!11!1
         if (fool):
-            chosentheme = themes.pink
+            chosentheme = themes.getTheme("pink")
 
-        self.setStyleSheet(themes.main + chosentheme)
+        self.setStyleSheet(themes.getTheme("main") + chosentheme)
+        self.ensurePolished()
+        print("tried to load theme")
         return
 
     # Misc
