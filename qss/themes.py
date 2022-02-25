@@ -192,7 +192,7 @@ themes["dracula"] = """
 /* dock at top */
 #DockTabFrame{
 	background-color: #1c1a22;
-	border-color: #282a36;
+	border-color: #1e1f29;
 }
 
 /* bottom play button panel */
@@ -202,7 +202,7 @@ themes["dracula"] = """
 
 /* stacked widget */
 QStackedWidget>QWidget{
-	background-color: #282a36;
+	background-color: #1e1f29;
 }
 
 /* list widget */
@@ -217,7 +217,7 @@ QScrollBar:vertical{
 }
 
 QScrollBar::sub-page, QScrollBar::add-page{
-	background: #44475a;
+	background: #282a36;
 }
 
 QScrollBar::handle{
@@ -243,11 +243,11 @@ QRadioButton{
 }
 
 QRadioButton:hover, QRadioButton:checked:hover{
-	background-color: #44475a;
+	background-color: #282a36;
 }
 
 QRadioButton:checked{
-	background-color: #44475a;
+	background-color: #282a36;
 }
 
 QRadioButton::indicator{
@@ -260,13 +260,13 @@ QRadioButton::indicator:checked{
 
 /* radio buttons for dock bar tabs */
 #DockTabFrame QRadioButton::checked{
-	background-color: #282a36;
+	background-color: #1e1f29;
 	border-color: #bd93f9;
 }
 
 /* q splitter */
 QSplitter::handle{
-	background-color: #44475a;
+	background-color: #282a36;
 }
 
 /* text elementsss */
@@ -279,27 +279,27 @@ QLabel, QCheckBox{
 /* Buttons */
 QPushButton{
     font-family: "Segoe UI";
-	background-color: #bd93f9;
+	background-color: #9a77cc;
 	color: #f8f8f2;
 }
 
 QPushButton:hover{
-background-color: #c69dff;
+	background-color: #c69dff;
 }
 
 QPushButton:pressed{
-background-color: #bc8ffa;
+	background-color: #bc8ffa;
 }
 
 QPushButton:!enabled{
-	background-color: #44475a;
+	background-color: #282a36;
 	color: #6272a4;
 }
 
 /* CheckBoxes */
 QCheckBox::indicator{
 	background-color: #f8f8f2;
-	border-color: #282a36;
+	border-color: #1e1f29;
 }
 
 QCheckBox::indicator:hover{
@@ -329,7 +329,7 @@ QCheckBox::indicator:disabled{
 
 /* scroll area background */
 QScrollArea>QWidget>QWidget{
-	background-color: #44475a;
+	background-color: #282a36;
 }
 
 QTabBar::tab{
@@ -338,7 +338,7 @@ QTabBar::tab{
 
 QTabBar::tab:hover{
 	color: #f8f8f2;
-	background-color: #44475a;
+	background-color: #282a36;
 }
 
 QTabBar::tab:selected{
@@ -347,22 +347,22 @@ QTabBar::tab:selected{
 }
 
 QTabWidget::pane{
-	background-color: #44475a;
+	background-color: #282a36;
 }
 
 /* content frames */
 #GamePageContentFrame>QWidget>QWidget{
-	background-color: #44475a;
+	background-color: #282a36;
 }
 
 QTabWidget>QWidget>QWidget{
-	background-color: #44475a;
+	background-color: #282a36;
 }
 
 /* Combobox, line edit */
 
 QLineEdit, QComboBox{
-	background-color: #282a36;
+	background-color: #1e1f29;
 	color: #f8f8f2;
 }
 
